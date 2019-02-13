@@ -1,0 +1,16 @@
+[
+  {
+    "artifact": "frcJava (in project ProjectoNova)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "ProjectoNova",
+    "language": "java"
+  },
+  {
+    "artifact": "frcJava (in project Rampy2019)",
+    "target": "roborio",
+    "debugfile": "frcJava_roborio.debugconfig",
+    "project": "Rampy2019",
+    "language": "java"
+  }
+]
