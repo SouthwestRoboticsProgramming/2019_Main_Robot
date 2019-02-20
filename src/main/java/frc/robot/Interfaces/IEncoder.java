@@ -12,5 +12,20 @@ package frc.robot.Interfaces;
  */
 public interface IEncoder {
     void reset();
-    double getDistance();
+    double modifier();
+
+    double theta(); // angle
+    default double x() {
+        return modifier() * theta();
+    }
+
+    double omega(); // angular velocity
+    default double v() { // velocity
+        return modifier() * omega();
+    }
+
+    // double alpha();
+    // default double acceleration() {
+    //     return modifier() * alpha();
+    // }
 }

@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.controllers.*;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import frc.robot.Interfaces.*;
+import frc.robot.Interfaces.IController.Button;
+import frc.robot.commands.*;
+
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -22,21 +25,36 @@ import frc.robot.Interfaces.*;
  */
 public class OI {
 
-	public final IController controller;
+	public final IController pilot;
+	public final IController arm_pilot;
 	// public Xbox xbox;
 	// private TwoJoysticks twoJoy;
 
-	private static final int PORT_RIGHT = 1;
-	private static final int PORT_LEFT = 0;
-	private static final int PORT_XBOX = 2;
+	private static final int PORT_XBOX = 0;
+	private static final int PORT_LEFT = 1;
+	private static final int PORT_RIGHT = 2;
 	public OI() {
+
+		System.out.println("starting OI...  " + Robot.vacuum);
 		// xbox = new Xbox(PORT_XBOX);
-		// twoJoy = new TwoJoysticks(PORT_RIGHT, PORT_LEFT);
+		// twoJoy = new TwoJoysticks(PORT_LEFT, PORT_RIGHT);
 		// JoystickButton a = xbox.getButton(Hand.kLeft, 1);
 		// JoystickButton three = twoJoy.getButton(Hand.kRight, 3);
 		
-		// controller = new TwoJoysticks(PORT_LEFT,PORT_RIGHT);
-		controller = new Xbox(0);
+		// We reversed these to make it not go backwards
+		pilot = new TwoJoysticks(Hand.kRight, PORT_RIGHT, PORT_LEFT);
+		arm_pilot  = new Xbox(PORT_XBOX);
+
+		pilot.getButton(Button.PopRamp).whenPressed(new PopRamp(Robot.ramp));
+		pilot.getButton(Button.ToggleRearUp).toggleWhenPressed(new RearUp(Robot.climb));
+
+		arm_pilot.getButton(Button.ToggleVac).toggleWhenPressed(new VacuumToggle(Robot.m_arm, Robot.vacuum));
+		arm_pilot.getButton(Button.HeightTo1).whenPressed(new ArmToHeight(Robot.m_arm, 1));
+		arm_pilot.getButton(Button.HeightTo2).whenPressed(new ArmToHeight(Robot.m_arm, 2));
+
+
+
+
 	}
 
 
@@ -93,6 +111,8 @@ public class OI {
   public double getPOV() {
     return xbox.getPOV();
   }
+
+  XboxButtonMap.A.toInt() 
 */
 
   //// CREATING BUTTONS

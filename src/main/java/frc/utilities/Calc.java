@@ -7,10 +7,14 @@
 
 package frc.utilities;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+import java.util.function.Function;
 /**
  * Add your docs here.
  */
 public class Calc {
+    public static double h = .1;
+
     public static double atrig(double opp, double adj) {
         return fxRad( Math.atan(opp/adj)
                     + Math.signum(Math.signum(adj) - 1) * Math.abs(Math.signum(adj))
@@ -30,5 +34,28 @@ public class Calc {
     }
     public static Duo quadratic(double a, double b, double c) {
         return new Duo(1, -1).mult(Math.sqrt(b*b - 4 * a * c)).sub(b).div(2 * a);
+    }
+
+    public static double integral(Function<Double,Double> fn, double x) {
+        return Math.abs(x) < h ? (fn.apply(x) + fn.apply(0d)) / 2 * x : integral(fn, x - Math.signum(x) * h) + (fn.apply(x) + fn.apply(x - Math.signum(x) * h)) / 2 * h;
+    }
+
+    public static double eq(double x, double y) {
+        return 1 - Math.abs(Math.signum(x - y));
+    }
+    public static double neq(double x, double y) {
+        return Math.abs(Math.signum(x-y));
+    }
+    public static double gteq(double x, double y) {
+        return Math.signum(Math.signum(x - y) + 1);
+    }
+    public static double lteq(double x, double y) {
+        return gteq(y,x);
+    }
+    public static double gt(double x, double y) {
+        return gteq(x,y) * neq(x,y);
+    }
+    public static double lt(double x, double y) {
+        return 1 - gteq(x,y);
     }
 }

@@ -34,11 +34,42 @@ public class Xbox implements IController {
         }
         return output;
     }
-    public JoystickButton getButton(Hand hand, int id) {
-        return new JoystickButton(xbox, id);
+    public JoystickButton getButton(Button button) {
+        switch(button) {
+            case HeightTo2 : return new JoystickButton(xbox, XboxMap.B.toInt());
+            case PopRamp    : return new JoystickButton(xbox, XboxMap.Y.toInt());
+            case HeightTo1 : return new JoystickButton(xbox, XboxMap.A.toInt());
+            case ToggleVac  : return new JoystickButton(xbox, XboxMap.X.toInt());
+            default         : return new JoystickButton(xbox, XboxMap.X.toInt());
+        }
     }
+    
     public void rumble(double amount) {
         xbox.setRumble(RumbleType.kLeftRumble, amount);
         xbox.setRumble(RumbleType.kRightRumble,amount);
+    }
+    public double getTrigger(Hand hand) {
+        return xbox.getTriggerAxis(hand);
+    }
+	private enum XboxMap {
+		A(1),
+		B(2),
+		X(3),
+		Y(4),
+		LeftTrigger(5),
+		RightTrigger(6),
+		Windows(7),
+		Select(8),
+		LeftJoystick(9),
+		RightJoystick(10);
+		private int num;
+		XboxMap(int buttonNumber)
+		{
+			num = buttonNumber;
+		}
+		public int toInt()
+		{
+			return num;
+		}
     }
 }

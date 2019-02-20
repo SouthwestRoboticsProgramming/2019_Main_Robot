@@ -20,11 +20,12 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 public class TwoJoysticks implements IController {
     private Joystick left;
     private Joystick right;
-    private Hand defaultHand = Hand.kLeft;
+    private Hand dominantHand;
 
-    public TwoJoysticks(int left, int right) {
+    public TwoJoysticks(Hand dominanthand, int left, int right) {
         this.left = new Joystick(left);
         this.right = new Joystick(right);
+        this.dominantHand = dominanthand;
     }
 
     public double getAnalog(Hand hand, AxisType axis) {
@@ -32,7 +33,7 @@ public class TwoJoysticks implements IController {
         switch(hand) {
             case kLeft  : output = left.getAxis(axis); break;
             case kRight : output = -right.getAxis(axis); break;
-            default     : output = getAnalog(defaultHand, axis); break;
+            default     : output = getAnalog(dominantHand, axis); break;
         }
         return output;
     }
@@ -42,9 +43,24 @@ public class TwoJoysticks implements IController {
         switch(hand) {
             case kLeft :output = new JoystickButton(left, id); break;
             case kRight:output = new JoystickButton(right,id); break;
-            default    :output = getButton(defaultHand, id)  ; break;
+            default    :output = getButton(dominantHand, id)  ; break;
         }
         return output;
     }
-
+    public JoystickButton getButton(Button button) {
+        switch(button) {
+            case PopRamp     : return getButton(dominantHand, 2);
+            case ToggleClaw  : return getButton(dominantHand, 3);
+            case ToggleRearUp: return getButton(dominantHand, 4);
+            default          : return getButton(dominantHand, 11);
+        }
+    }
+    public double getTrigger(Hand hand) {
+        if (hand == Hand.kRight) {
+            return right.getTrigger() ? 1 : 0;
+        }
+        else {
+            return left.getTrigger() ? 1 : 0;
+        }
+    }
 }

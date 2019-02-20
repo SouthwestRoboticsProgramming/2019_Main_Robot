@@ -22,10 +22,10 @@ public interface IGyro {
         gyro.calibrate();
     }
 
-    default double getAng() {
-        return getAng(align(Axis.Z));
+    default double theta() {
+        return theta(align(Axis.Z));
     }
-    default double getAng(Axis axis) {
+    default double theta(Axis axis) {
         double ang;
         switch(align(axis)) {
             case X : ang = gyro.getAngleX(); break;
@@ -36,10 +36,10 @@ public interface IGyro {
         return modifier(align(axis)) * ang;
     }
 
-    default double getRate() {
-        return getRate(align(Axis.Z));
+    default double omega() {
+        return omega(align(Axis.Z));
     }
-    default double getRate(Axis axis) {
+    default double omega(Axis axis) {
         double rate;
         switch(align(axis)) {
             case X : rate = gyro.getRateX(); break;
@@ -50,10 +50,10 @@ public interface IGyro {
         return modifier(align(axis)) * rate;
     }
 
-    default double getAccel() {
-        return getAccel(align(Axis.Z));
+    default double alpha() {
+        return alpha(align(Axis.Z));
     }
-    default double getAccel(Axis axis) {
+    default double alpha(Axis axis) {
         double accel;
         switch(align(axis)) {
             case X : accel = gyro.getAccelX(); break;

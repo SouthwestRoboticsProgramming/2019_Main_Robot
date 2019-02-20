@@ -7,6 +7,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.Log;
@@ -23,7 +24,9 @@ public class AutonomousChain extends CommandGroup {
     // addSequential(new Command2());
     // these will run in addSequentialorder.
     //addSequential(new AutonomousGyroDriveCommand(m_sub, m_sub.getLeftEncoder(), 160, .4, -90d));
-    addSequential(new AutonomousGyroDrive(m_sub, m_sub.getLeftEncoder(), 100, .4, 0d));
+    
+    //addSequential(new AutonomousGyroDrive(m_sub, m_sub.getEncoder(Hand.kLeft), 100, .4, 0d));
+    
     // To run multiple commands at the same time,
     // use addParallel()
     // e.g. addParallel(new Command1());

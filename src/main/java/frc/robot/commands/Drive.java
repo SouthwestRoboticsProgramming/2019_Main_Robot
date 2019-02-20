@@ -32,7 +32,7 @@ public class Drive extends Command {
   @Override
   protected void execute() {
 
-    Log.info("Driving");
+    //Log.info("Driving");
     m_sub.driveCommandPeriodic();
   }
   @Override

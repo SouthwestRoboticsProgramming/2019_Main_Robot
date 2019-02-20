@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -18,10 +19,14 @@ import frc.robot.sensors.VerticalGyro;
 import frc.utilities.*;
 import frc.robot.Interfaces.IGyro.Axis;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.Ramp;
 import frc.robot.commands.AutonomousChain;
-import frc.robot.commands.AutonomousGyroDrive;
 import frc.robot.commands.Drive;
 import frc.robot.sensors.In;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+import frc.robot.subsystems.*;
+import frc.robot.commands.*;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -31,13 +36,28 @@ import frc.robot.sensors.In;
  */
 public class Robot extends TimedRobot {
   private static DriveTrain m_drive;
-  private static OI m_oi;
+  public static final Arm m_arm = new Arm();
+  public static final Ramp ramp = new Ramp();
+  public static final Climber climb = new Climber();
+  public static final Vacuum vacuum = new Vacuum();
 
+  private static final OI m_oi = new OI();
 
+  public static final double roundDuration = .02;
+ /*
+  abreviations :
+  x = position
+  v = velocity 
+  a = acceleration
+
+  theta = angular position
+  omega = angular velocity
+  alpha = angular acceleration
+ */
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
-  Command m_driveCommand;
+  Command m_teleopCommand;
   /*
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -46,14 +66,14 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     In.gyro.calibrate();
     Log.info("calibrating");
-
-    m_oi = new OI();
+    System.out.println("Starting robot init..." + vacuum); 
+    
     m_drive = new DriveTrain(m_oi);
 
     m_autonomousCommand = new AutonomousChain(m_drive);
-
-    m_driveCommand = new Drive(m_drive);
-    m_chooser.setDefaultOption("Drive Command", m_driveCommand);
+    m_teleopCommand = new TeleopCtrl(m_drive,m_arm,m_oi);
+    
+    m_chooser.setDefaultOption("Teleop Command", m_teleopCommand);
 //    m_chooser.addOption("Autonomous Command", m_autonomousCommand);
     // m_chooser.addObject("Drive command",new DriveCommand(m_drive));
     // chooser.addOption("My Auto", new MyAutoCommand());
@@ -73,6 +93,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+  
 
     // Log.info("Angle = " + m_drive.getAngle());
   }
@@ -145,7 +166,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    Log.info("teleopInit");
+    //Log.info("teleopInit");
     
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
@@ -155,7 +176,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    m_driveCommand.start();
+    m_teleopCommand.start();
   }
 
   /**
@@ -163,8 +184,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    Log.info("LIME VALUE  = " + In.lime.getX());
-    Log.info("teleopPeriodic");
+    //Log.info("teleopPeriodic");
     Scheduler.getInstance().run();
   }
 

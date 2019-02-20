@@ -47,8 +47,8 @@ public class AutonomousGyroDrive extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    Log.info("Encoder = " + m_encoder.getDistance());
-    return m_encoder.getDistance() > inches;
+    Log.info("Encoder = " + m_encoder.x());
+    return m_encoder.x() > inches;
   }
 
   // Called once after isFinished returns true

@@ -35,10 +35,10 @@ public class DriveTrain extends Subsystem {
 	public static double speedFraction = .5;
 	public static double turnFraction = .75;
 
-	private static final double MAX_CHANGE = .2;
+	private static final double MAX_CHANGE = .7;
 	private static final double MAX_SPEED = 1;
-	private	double Pl = 0;
-	private double Pr = 0;
+	// private	double Pl = 0;
+	// private double Pr = 0;
 
 	
 	//private final double SPEED_DIFFERENTIAL = 0.2;
@@ -54,7 +54,8 @@ public class DriveTrain extends Subsystem {
 	private DifferentialDrive m_drive;
 	private OI m_oi;
 	
-
+	private final WheelEncoder left;
+	private final WheelEncoder right;
 	
 	public DriveTrain(OI oi)
 	{
@@ -68,15 +69,21 @@ public class DriveTrain extends Subsystem {
 		
 		m_drive              = new DifferentialDrive(leftSpeedController, rightSpeedController);
 		
+		left  = new WheelEncoder(leftRearMotor, false);
+		right = new WheelEncoder(rightRearMotor, true);
+
 		//calibrating
 
 	}
 
-	public IEncoder getLeftEncoder() {
-		return new WheelEncoder(this.leftRearMotor, true);
-	}
-	public IEncoder getRightEncoder() {
-		return new WheelEncoder(this.rightRearMotor, false);
+	// public IEncoder getLeftEncoder() {
+	// 	return new WheelEncoder(this.leftRearMotor, true);
+	// }
+	// public IEncoder getRightEncoder() {
+	// 	return new WheelEncoder(this.rightRearMotor, false);
+	// }
+	public IEncoder getEncoder(Hand hand) {
+		return 	hand == Hand.kRight ? right : left ; 
 	}
 
 	@Override
@@ -119,20 +126,25 @@ public class DriveTrain extends Subsystem {
 
 	
 	public void driveCommandPeriodic() {
-		if (Math.abs(In.gyro.getAccel()) > .2) {
-			m_oi.controller.rumble(1d);
-		} 
-		else {
-			m_oi.controller.rumble(0d);
-		}
-		double l = m_oi.controller.getDrive(Hand.kLeft);
-		double r = m_oi.controller.getDrive(Hand.kRight);
+		// if (Math.abs(In.gyro.getAccel()) > .2) {
+		// 	m_oi.controller.rumble(1d);
+		// } 
+		// else {
+		// 	m_oi.controller.rumble(0d);
+		// }
+		double l = m_oi.pilot.getAnalog(Hand.kLeft);
+		double r = m_oi.pilot.getAnalog(Hand.kRight);
+
 		// Duo dir = (new Duo(l,r)).sub(previous_speed).mult(.1).add(previous_speed);
-		l = (l - Pl) * MAX_CHANGE + Pl;
-		r = (r - Pr) * MAX_CHANGE + Pr;
+		//l = (l - leftSpeedController.get())  * MAX_CHANGE + leftSpeedController.get() ;
+		//r = (r - rightSpeedController.get()) * MAX_CHANGE + rightSpeedController.get();
+		
 		m_drive.tankDrive(l,r);
-		Pl = l;
-		Pr = r;
+		// Log.info("			LEFT  = " + l);
+		// Log.info("			RIGHT = " + r);
+
+		// Pl = l;
+		// Pr = r;
 	}
 	
 
@@ -150,8 +162,8 @@ public class DriveTrain extends Subsystem {
     // 	return new	Duo(turnSpeed, speed);
 	// }
 	public	Duo autonomousGyroCalc(double speed, double degrees) {
-		double currentAng = Calc.fxDeg(In.gyro.getRate(Axis.Z));
-		double rateZ = In.gyro.getRate();
+		double currentAng = Calc.fxDeg(In.gyro.theta(Axis.Z)); // Maybe for some reason getAccel(); 
+		double rateZ = In.gyro.omega();
 		double changeAng  = Calc.fxDeg(degrees - currentAng);
 		Log.info("GYRO = " + currentAng);
 		// double turnSpeed = - 1.5 * changeAng/Math.max(Math.abs(gyro.getAccelZ()) * 2, 1);
@@ -160,7 +172,12 @@ public class DriveTrain extends Subsystem {
     	return new	Duo(turnSpeed, speed);
 	}
 
-			
+	public void face(double degrees) {
+		double currentAng = Calc.fxDeg(In.gyro.theta(Axis.Z));
+		double changeAng  = Calc.fxDeg(degrees - currentAng);
+		double turnSpeed  = (changeAng - In.gyro.omega() / 3) / 30;
+		m_drive.arcadeDrive(0,turnSpeed);
+	}	
 	/*
 	public void driveCommandPeriodic() {
     	Tuple<Double,Double> input = new Tuple<>();
