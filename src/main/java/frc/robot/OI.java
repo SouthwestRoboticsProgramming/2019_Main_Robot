@@ -27,12 +27,15 @@ public class OI {
 
 	public final IController pilot;
 	public final IController arm_pilot;
+
+
 	// public Xbox xbox;
 	// private TwoJoysticks twoJoy;
 
 	private static final int PORT_XBOX = 0;
 	private static final int PORT_LEFT = 1;
 	private static final int PORT_RIGHT = 2;
+
 	public OI() {
 
 		System.out.println("starting OI...  " + Robot.vacuum);
@@ -42,9 +45,10 @@ public class OI {
 		// JoystickButton three = twoJoy.getButton(Hand.kRight, 3);
 		
 		// We reversed these to make it not go backwards
-		pilot = new TwoJoysticks(Hand.kRight, PORT_RIGHT, PORT_LEFT);
-		arm_pilot  = new Xbox(PORT_XBOX);
-
+		// pilot = new TwoJoysticks(Hand.kRight, PORT_RIGHT, PORT_LEFT);
+		// arm_pilot  = new Xbox(PORT_XBOX);
+		pilot = new Xbox(PORT_XBOX);
+		arm_pilot  = new TwoJoysticks(Hand.kRight, PORT_RIGHT, PORT_LEFT);
 		pilot.getButton(Button.PopRamp).whenPressed(new PopRamp(Robot.ramp));
 		pilot.getButton(Button.ToggleRearUp).toggleWhenPressed(new RearUp(Robot.climb));
 

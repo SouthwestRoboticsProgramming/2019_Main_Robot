@@ -22,7 +22,7 @@ public class TeleopCtrl extends CommandGroup {
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
     // these will run in order.
-    this.addParallel(new Drive(train));
+    this.addParallel(new Drive(train, oi));
     this.addParallel(new ArmCtrl(arm, oi));
     // To run multiple commands at the same time,
     // use addParallel()

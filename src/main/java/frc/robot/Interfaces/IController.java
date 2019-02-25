@@ -9,6 +9,7 @@ package frc.robot.Interfaces;
 import frc.robot.Interfaces.IGyro.Axis;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
+import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 /**
  * Add your docs here.
@@ -27,6 +28,8 @@ public interface IController {
     public JoystickButton getButton(Button button);
 
     default public void rumble(double magnitude) {}
+
+    public void defaultDrive(DriveTrain train);
 
     public enum Button {
         ExtendClaw,

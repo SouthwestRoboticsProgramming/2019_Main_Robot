@@ -58,4 +58,12 @@ public class Calc {
     public static double lt(double x, double y) {
         return 1 - gteq(x,y);
     }
+
+    public static double val(boolean bool) {
+        return bool ? 1 : 0;
+    }
+    public static boolean val(double n) {
+        Math.signum(2);
+        return n == 0 ? false : true ;
+    }
 }

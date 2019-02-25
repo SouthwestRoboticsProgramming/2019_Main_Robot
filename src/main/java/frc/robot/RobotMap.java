@@ -41,6 +41,8 @@ public class RobotMap {
 	public static final int UPPER_EXTEND_LIMIT_SWITCH = 8;
 	
 	public static final int GYRO_PORT_NUM = 1;
+
+	public static final int SHOULDER_ENCODER = 999;
 	
 
 }

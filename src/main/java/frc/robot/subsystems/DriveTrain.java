@@ -28,20 +28,23 @@ import frc.robot.Interfaces.*;
 import frc.robot.sensors.*;
 import frc.robot.*;
 import frc.utilities.*;
-
+import edu.wpi.first.wpilibj.Joystick.AxisType;
 
 public class DriveTrain extends Subsystem {
 
 	public static double speedFraction = .5;
 	public static double turnFraction = .75;
 
-	private static final double MAX_CHANGE = .7;
-	private static final double MAX_SPEED = 1;
-	// private	double Pl = 0;
-	// private double Pr = 0;
+	private static final double MAX_CHANGE = .1;
+	// private static final double MAX_SPEED = 1;
+	private	double Pl = 0;
+	private double Pr = 0;
+
+	private double Pradius = 0;
+	private double Ptheta = 0;
 
 	
-	//private final double SPEED_DIFFERENTIAL = 0.2;
+	// private final double SPEED_DIFFERENTIAL = 0.2;
 	//private Tuple<Double,Double> previous_heading = new Tuple<Double,Double>(0d,0d);
 	
 	private WPI_TalonSRX leftRearMotor;
@@ -125,7 +128,7 @@ public class DriveTrain extends Subsystem {
 	// }
 
 	
-	public void driveCommandPeriodic() {
+	public void tankDrivePeriodic() {
 		// if (Math.abs(In.gyro.getAccel()) > .2) {
 		// 	m_oi.controller.rumble(1d);
 		// } 
@@ -136,17 +139,26 @@ public class DriveTrain extends Subsystem {
 		double r = m_oi.pilot.getAnalog(Hand.kRight);
 
 		// Duo dir = (new Duo(l,r)).sub(previous_speed).mult(.1).add(previous_speed);
-		//l = (l - leftSpeedController.get())  * MAX_CHANGE + leftSpeedController.get() ;
-		//r = (r - rightSpeedController.get()) * MAX_CHANGE + rightSpeedController.get();
+		l = (l - Pl)  * MAX_CHANGE + Pl ;
+		r = (r - Pr) * MAX_CHANGE + Pr;
 		
 		m_drive.tankDrive(l,r);
 		// Log.info("			LEFT  = " + l);
 		// Log.info("			RIGHT = " + r);
 
-		// Pl = l;
-		// Pr = r;
+		Pl = l;
+		Pr = r;
 	}
-	
+	public void arcadeDrivePeriodic() {
+		double theta = m_oi.pilot.getAnalog(AxisType.kX);
+		double r = m_oi.pilot.getAnalog(AxisType.kY);
+
+		theta = (theta - Ptheta) * MAX_CHANGE + Ptheta;
+		r = (r - Pradius) * MAX_CHANGE + Pradius;
+
+		this.arcadeDrive(r, theta);
+
+	}
 
     // public	Duo autonomousGyroCalc(double speed, double degrees) {
 	// 	double gyroAng    = this.getAngle();
@@ -194,7 +206,7 @@ public class DriveTrain extends Subsystem {
 	}
 	*/
     public void arcadeDrive(double speed, double rotation) {
-		m_drive.arcadeDrive(speed,rotation);
+		m_drive.arcadeDrive(speed,-rotation);
 	}
 	/*
     public void gyroDrive() {

@@ -16,13 +16,16 @@ import frc.robot.Interfaces.IGyro.Axis;
 /**
  * An example command.  You can replace me with your own command.
  */
-import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.*;
+import frc.robot.OI;
 
 public class Drive extends Command {
   DriveTrain m_sub;
-  public Drive(DriveTrain m_train) {
+  OI m_oi;
+  public Drive(DriveTrain m_train, OI oi) {
     // Use requires() here to declare subsystem dependencies
     m_sub = m_train;
+    m_oi = oi;
     requires(m_sub);
   }
   @Override
@@ -31,10 +34,9 @@ public class Drive extends Command {
   }
   @Override
   protected void execute() {
-
+      m_oi.pilot.defaultDrive(m_sub);
     //Log.info("Driving");
-    m_sub.driveCommandPeriodic();
-  }
+    }
   @Override
   protected boolean isFinished() {
     return false;

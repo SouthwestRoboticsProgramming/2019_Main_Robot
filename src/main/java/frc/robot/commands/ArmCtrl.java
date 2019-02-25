@@ -35,17 +35,13 @@ public class ArmCtrl extends Command {
   int breakCounter = 0;
   private JoystickButton extendArm;
 
+
   private final double MAX_CHNG_W = .2;
   private final double MAX_CHNG_S = .2;
   private final double MAX_CHNG_E = .2;
   private final double MAX_EXTENSION = 1;
 
-  DigitalInput LowerShoulderLimitSwitch = new DigitalInput(RobotMap.LOWER_SHOULDER_LIMIT_SWITCH);
-  DigitalInput UpperShoulderLimitSwitch = new DigitalInput(RobotMap.UPPER_SHOULDER_LIMIT_SWITCH);
-  DigitalInput LowerWristLimitSwitch = new DigitalInput(RobotMap.LOWER_WRIST_LIMIT_SWITCH);
-  DigitalInput UpperWristLimitSwitch = new DigitalInput(RobotMap.UPPER_WRIST_LIMIT_SWITCH);
-  DigitalInput LowerExtendLimitSwitch = new DigitalInput(RobotMap.LOWER_EXTEND_LIMIT_SWITCH);
-  DigitalInput UpperExtendLimitSwitch = new DigitalInput(RobotMap.UPPER_EXTEND_LIMIT_SWITCH);
+
 
 
 
@@ -57,29 +53,7 @@ public class ArmCtrl extends Command {
     extendArm = oi.arm_pilot.getButton(Button.ExtendClaw);
   }
 
-  public boolean isShoulderTooHigh() {
-    return !UpperShoulderLimitSwitch.get();
-	}
-	public boolean isShoulderTooLow() {
-    return !LowerShoulderLimitSwitch.get();
-  }
-  public boolean isWristTooHigh() {
-    
-    return !UpperWristLimitSwitch.get();
-	}
-	public boolean isWristTooLow() {
-    
-    return !LowerWristLimitSwitch.get();
-  }
-  // This one is used differently!
-  public boolean isExtendTooHigh() {
-    
-    return !UpperExtendLimitSwitch.get();
-	}
-	public boolean isExtendTooLow() {
-    
-    return !LowerExtendLimitSwitch.get();
-	}
+
 
   // Called just before this Command runs the first time
   @Override
@@ -101,113 +75,120 @@ public class ArmCtrl extends Command {
     double shoulder_val = oi.arm_pilot.getAnalog(Hand.kLeft); //But its the left side???
     double wrist_val = oi.arm_pilot.getAnalog(Hand.kRight);
 
-    if (inProcessOfBreaking) {
-      if (breakCounter < 10) {
-        breakCounter++;
-        Log.info("Waiting!");
-      }
-      else {
-        inProcessOfBreaking = false;
-        breakCounter = 0;
-        Log.info("Done waiting!");
-      }
-    }
-    else {
-      //if (((((Math.abs(shoulder_val) < .1) && (Math.abs(previousShoulder)>.1))||((Math.abs(shoulder_val) > .1) && (Math.abs(previousShoulder)<.1))))) {
-      if ((Math.abs(shoulder_val) < .1)) {
-        arm.setBreak(true);
-        if (Math.abs(previousShoulder)>.1) {
-          inProcessOfBreaking = true;
-          Log.info("Changing break states!");
-        }
-      }
-      else if ((Math.abs(shoulder_val) > .1)) {
-        arm.setBreak(false);
-        if (Math.abs(previousShoulder)<.1) {
-          inProcessOfBreaking = true;
-          Log.info("Changing break states!");
-        }
-      }
-      else if (((isShoulderTooHigh() && (shoulder_val >= 0))||(isShoulderTooLow() && (shoulder_val <= 0)))&&!isBreakOn) {
-        Log.info("shoulder too high/low");
-        shoulder_val = 0;
-        arm.setShoulder(shoulder_val);
-      }
-      else {
-        //shoulder_val = (shoulder_val - previousShoulder) * MAX_CHNG_S + previousShoulder;
-        shoulder_val = Math.min(Math.abs(shoulder_val), .6) * Math.signum(shoulder_val) ;
-        if (Math.abs(shoulder_val) < .01) {
-          shoulder_val = 0;
-          arm.brakeShoulder();
-        }
-      }
-    }
+    // Cal Commented the 59 lines below this Feb 21 2019.
+    // if (inProcessOfBreaking) {
+    //   if (breakCounter < 10) { // goes for .2 seconds
+    //     breakCounter++;
+    //     Log.info("Waiting!");
+    //   }
+    //   else {
+    //     inProcessOfBreaking = false;
+    //     breakCounter = 0;
+    //     Log.info("Done waiting!");
+    //   }
+    // }
+    // else {
+    //   //if (((((Math.abs(shoulder_val) < .1) && (Math.abs(previousShoulder)>.1))||((Math.abs(shoulder_val) > .1) && (Math.abs(previousShoulder)<.1))))) {
+    //   if ((Math.abs(shoulder_val) < .1)) {
+    //     arm.setBreak(true);
+    //     if (Math.abs(previousShoulder)>.1) {
+    //       inProcessOfBreaking = true;
+    //       Log.info("Changing break states!");
+    //     }
+    //   }
+    //   else if ((Math.abs(shoulder_val) > .1)) {
+    //     arm.setBreak(false);
+    //     if (Math.abs(previousShoulder)<.1) {
+    //       inProcessOfBreaking = true;
+    //       Log.info("Changing break states!");
+    //     }
+    //   }
+    //   else if (((isShoulderTooHigh() && (shoulder_val >= 0))||(isShoulderTooLow() && (shoulder_val <= 0)))&&!isBreakOn) {
+    //     Log.info("shoulder too high/low");
+    //     shoulder_val = 0;
+    //     arm.setShoulder(shoulder_val);
+    //   }
+    //   else {
+    //     //shoulder_val = (shoulder_val - previousShoulder) * MAX_CHNG_S + previousShoulder;
+    //     shoulder_val = Math.min(Math.abs(shoulder_val), .6) * Math.signum(shoulder_val) ;
+    //     if (Math.abs(shoulder_val) < .01) {
+    //       shoulder_val = 0;
+    //       arm.brakeShoulder();
+    //     }
+    //   }
+    // }
 
-    arm.setShoulder(shoulder_val * .3);
+    // arm.setShoulder(shoulder_val * .3);
     
 
-    if ((isWristTooHigh() && (wrist_val >= 0)) || (isWristTooLow() && (wrist_val <= 0))) {
-      wrist_val = 0;
-      arm.setWrist(0);
-    }
-    else {
-      wrist_val    = (wrist_val    - previousWrist   ) * MAX_CHNG_W + previousWrist   ;
-      if (Math.abs(wrist_val) < .01) {
-        wrist_val = 0;
-        arm.brakeWrist();
-      }
-      else {
-        arm.setWrist(   wrist_val   );
-      }
-    }
+    // if ((isWristTooHigh() && (wrist_val >= 0)) || (isWristTooLow() && (wrist_val <= 0))) {
+    //   wrist_val = 0;
+    //   arm.setWrist(0);
+    // }
+    // else {
+    //   wrist_val    = (wrist_val    - previousWrist   ) * MAX_CHNG_W + previousWrist   ;
+    //   if (Math.abs(wrist_val) < .01) {
+    //     wrist_val = 0;
+    //     arm.brakeWrist();
+    //   }
+    //   else {
+    //     arm.setWrist(   wrist_val   );
+    //   }
+    // }
     
     
 
     double lft_t = oi.arm_pilot.getTrigger(Hand.kLeft); // left and right triggers
     double rht_t = oi.arm_pilot.getTrigger(Hand.kRight);
-    //dou       gnble trigger = Math.max(lft_t, rht_t); // No Math.abs because triggers are always between 0 and 1
-    //trigger = -Calc.eq(lft_t, trigger) * lft_t + // lft is negative because it indicates contracting while rht is expanding
-    //           Calc.eq(rht_t, trigger) * rht_t ;
-    double trigger;
-    if (lft_t >= rht_t) {
-      trigger = -lft_t;
-    }
-    else {
-      trigger = rht_t;
-    }
+  // Cal uncommented the 3 lines below this Feb 21 2019
+    double trigger = Math.max(lft_t, rht_t); // No Math.abs because triggers are always between 0 and 1
+    trigger = -Calc.eq(lft_t, trigger) * lft_t + // lft is negative because it indicates contracting while rht is expanding
+               Calc.eq(rht_t, trigger) * rht_t ;
+    // Cal commented the 6 lines below this  Feb 21 2019
+    // double trigger;
+    // if (lft_t >= rht_t) {
+    //   trigger = -lft_t;
+    // }
+    // else {
+    //   trigger = rht_t;
+    // }
 
-    if (isExtendTooHigh()) {
-      if (trigger >= 0) {
-        isPastLimit = true;
-      }
-      else {
-        isPastLimit = false;
-      }
-      extensionPastLimit = 0;
-    }
-    if (isExtendTooLow() && (trigger >= 0)) {
-      trigger = 0;
-    }
-    else if (isExtendTooHigh() && (trigger <= 0)) {
-      trigger = 0;
-    }
-    else {
-      //trigger = (trigger - previousExtention) * MAX_CHNG_E + previousExtention;
-      if (Math.abs(trigger) < .01) {
-        trigger = 0;
-        arm.brakeExtention();
-      }
-    }
+
+// 2019-53
+// YYYY-MM-DD
+// we commented the 32 lines below Feb 25 2019
+  //   if (isExtendTooHigh()) {
+  //     if (trigger >= 0) {
+  //       isPastLimit = true;
+  //     }
+  //     else {
+  //       isPastLimit = false;
+  //     }
+  //     extensionPastLimit = 0;
+  //   }
+  //   if (isExtendTooLow() && (trigger >= 0)) {
+  //     trigger = 0;
+  //   }
+  //   else if (isExtendTooHigh() && (trigger <= 0)) {
+  //     trigger = 0;
+  //   }
+  //   else {
+  //     //trigger = (trigger - previousExtention) * MAX_CHNG_E + previousExtention;
+  //     if (Math.abs(trigger) < .01) {
+  //       trigger = 0;
+  //       arm.brakeExtention();
+  //     }
+  //   }
     
-    arm.setExtention(trigger * .3);
+  //   arm.setExtention(trigger * .3);
 
-    if (isPastLimit) {
-      extensionPastLimit += trigger;
-    }
-    previousExtention = trigger; // used for smoothing
-    previousWrist = wrist_val;
-    previousShoulder = shoulder_val;
-    previouslyBreaking = breaking;
+  //   if (isPastLimit) {
+  //     extensionPastLimit += trigger;
+  //   }
+  //   previousExtention = trigger; // used for smoothing
+  //   previousWrist = wrist_val;
+  //   previousShoulder = shoulder_val;
+  //   previouslyBreaking = breaking;
   }
 
   // Make this return true when this Command no longer needs to run execute()

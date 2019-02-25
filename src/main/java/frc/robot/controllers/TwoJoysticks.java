@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
-
+import frc.robot.subsystems.DriveTrain;
 /**
  * Add your docs here.
  */
@@ -22,10 +22,16 @@ public class TwoJoysticks implements IController {
     private Joystick right;
     private Hand dominantHand;
 
+
+
     public TwoJoysticks(Hand dominanthand, int left, int right) {
         this.left = new Joystick(left);
         this.right = new Joystick(right);
         this.dominantHand = dominanthand;
+    }
+
+    public void defaultDrive(DriveTrain train) {
+
     }
 
     public double getAnalog(Hand hand, AxisType axis) {

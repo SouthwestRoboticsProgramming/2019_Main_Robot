@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.subsystems.*;
 import frc.robot.Log;
 /**
  * Add your docs here.
@@ -24,6 +25,10 @@ public class Xbox implements IController {
     public Xbox(int port) {
         PORT = port;
         xbox = new XboxController(PORT);
+    }
+
+    public void defaultDrive(DriveTrain train) {
+        train.arcadeDrivePeriodic();
     }
 
     public double getAnalog(Hand hand, AxisType axis) {
