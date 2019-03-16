@@ -17,13 +17,15 @@ public class TeleopCtrl extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public TeleopCtrl(DriveTrain train, Arm arm, OI oi) {
+  public TeleopCtrl(DriveTrain train, Arm arm, Camera camera, OI oi) {
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
     // these will run in order.
     this.addParallel(new Drive(train, oi));
     this.addParallel(new ArmCtrl(arm, oi));
+    this.addParallel(new CameraCtrl(camera, oi));
+    
     // To run multiple commands at the same time,
     // use addParallel()
     // e.g. addParallel(new Command1());

@@ -54,8 +54,8 @@ public class Arm extends Subsystem {
   private static final double minimumBrakeTime = .1;
   private static final Timer timeWhileInRange = new Timer();
 
-  public final ShoulderEncoder shoulder;
-  public final ShoulderEncoder wrist;
+  public final ArmEncoder shoulder;
+  public final ArmEncoder wrist;
 
   private final Solenoid break_solenoid;
 
@@ -85,8 +85,8 @@ public class Arm extends Subsystem {
     shoulder_motor = new WPI_TalonSRX(SHOULDER_ID);
     wrist_motor = new WPI_TalonSRX(WRIST_ID);
     
-    shoulder = new ShoulderEncoder(shoulder_motor,false, 1, 32d); // 32 inches
-    wrist = new ShoulderEncoder(wrist_motor, false, 1, 5);
+    shoulder = new ArmEncoder(shoulder_motor,false, 1, 32d); // 32 inches
+    wrist = new ArmEncoder(wrist_motor, false, 1, 5);
     vacuum_motor_1 = new WPI_VictorSPX(VACUUM_1);
     vacuum_motor_2 = new WPI_VictorSPX(VACUUM_2);
     break_solenoid = new Solenoid(PCM_ID, BREAK_ID);
@@ -114,7 +114,7 @@ public class Arm extends Subsystem {
     }
   }
   public double setWrist(double x) {
-    x = -x; // Again I'm unceratin
+    x = -x; // Again I'm uncertain
     x = Math.min(Calc.val(isWristTooHigh())-1, x);
     x = Math.max(Calc.val(isWristTooLow()) -1, x);
     if (Math.abs(x) < minimumMotorInput) {
@@ -125,8 +125,8 @@ public class Arm extends Subsystem {
     return x;
   }
   public double setExtention (double x) {
-    x = Math.min(Calc.val(isExtendTooHigh())-1, x);
-    x = Math.max(Calc.val(isExtendTooHigh())-1, x);
+    x = Math.min(1 - Calc.val(isExtendTooHigh()), x);
+    x = Math.max(Calc.val(isExtendTooLow()) - 1, x);
     if (Math.abs(x) < minimumMotorInput) {
       brakeExtention();
       return 0;
@@ -134,6 +134,15 @@ public class Arm extends Subsystem {
     extention_motor.set(x);
     return x;
   }
+  // public double setShoulderAng(double degrees) {
+  //   double m = shoulder.omega();
+  //   double b = shoulder.theta();
+  //   double t = (degrees - b) / m;
+  //   setShoulder(t);
+  //   return t;
+  // }
+
+
   public void brakeShoulder() {
     shoulder_motor.set(0);
     setBrake(true);
@@ -203,7 +212,14 @@ public class Arm extends Subsystem {
 	public boolean isExtendTooLow() {
     
     return !LowerExtendLimitSwitch.get();
-	}
+  }
+  public Duo position() {
+    double x;
+    double y;
+    y = Math.sin(shoulder.theta()); // * extend.theta();
+    x = Math.cos(shoulder.theta()); // * extend.theta();
+    return new Duo(x,y);
+  }
 
   @Override
   public void initDefaultCommand() {

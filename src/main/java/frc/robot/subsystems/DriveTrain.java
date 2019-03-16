@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 //import frc.utilities.Tuple;
 // import frc.robot.sensors.ADIS16448_IMU;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 // import frc.utilities.Calc;
 // import frc.utilities	Duo;
@@ -35,7 +36,7 @@ public class DriveTrain extends Subsystem {
 	public static double speedFraction = .5;
 	public static double turnFraction = .75;
 
-	private static final double MAX_CHANGE = .1;
+	private static final double MAX_CHANGE = .7;
 	// private static final double MAX_SPEED = 1;
 	private	double Pl = 0;
 	private double Pr = 0;
@@ -43,6 +44,10 @@ public class DriveTrain extends Subsystem {
 	private double Pradius = 0;
 	private double Ptheta = 0;
 
+	private final boolean isInvertedLeft = true;
+	private final boolean isInvertedRight = true;
+
+	private final double MAG_TO_BRAKE = .1;
 	
 	// private final double SPEED_DIFFERENTIAL = 0.2;
 	//private Tuple<Double,Double> previous_heading = new Tuple<Double,Double>(0d,0d);
@@ -57,6 +62,8 @@ public class DriveTrain extends Subsystem {
 	private DifferentialDrive m_drive;
 	private OI m_oi;
 	
+
+
 	private final WheelEncoder left;
 	private final WheelEncoder right;
 	
@@ -69,11 +76,16 @@ public class DriveTrain extends Subsystem {
 		leftFrontMotor       = new WPI_TalonSRX(RobotMap.LEFT_FRONT_MOTOR);
 		leftSpeedController  = new SpeedControllerGroup(leftFrontMotor,leftRearMotor);
 		rightSpeedController = new SpeedControllerGroup(rightFrontMotor,rightRearMotor);
+
+		leftSpeedController.setInverted(this.isInvertedLeft);
+		rightSpeedController.setInverted(this.isInvertedRight);
 		
 		m_drive              = new DifferentialDrive(leftSpeedController, rightSpeedController);
 		
 		left  = new WheelEncoder(leftRearMotor, false);
 		right = new WheelEncoder(rightRearMotor, true);
+
+
 
 		//calibrating
 
@@ -98,7 +110,7 @@ public class DriveTrain extends Subsystem {
 
 
     public void drive(double left, double right) {
-    	m_drive.tankDrive(left, right);
+    	m_drive.tankDrive( left,   right);
     }
     public void brake() {
 		leftRearMotor.stopMotor();
@@ -137,12 +149,32 @@ public class DriveTrain extends Subsystem {
 		// }
 		double l = m_oi.pilot.getAnalog(Hand.kLeft);
 		double r = m_oi.pilot.getAnalog(Hand.kRight);
+		
+		// if(Math.abs(l) < MAG_TO_BRAKE) {
+		// 	l = 0;
+		// 	leftSpeedController.stopMotor();
+		// }
+		// if(Math.abs(r) < MAG_TO_BRAKE) {
+		// 	r = 0;
+		// 	rightSpeedController.stopMotor();
+		// }
 
-		// Duo dir = (new Duo(l,r)).sub(previous_speed).mult(.1).add(previous_speed);
-		l = (l - Pl)  * MAX_CHANGE + Pl ;
+		// Duo dir = --(new Duo(l,r)).sub(previous_speed).mult(.1).add(previous_speed);
+		l = (l - Pl) * MAX_CHANGE + Pl ;
 		r = (r - Pr) * MAX_CHANGE + Pr;
 		
-		m_drive.tankDrive(l,r);
+
+
+		// if (m_oi.pilot.getTrigger(Hand.kLeft) >= .9) {
+		// 	r = l;
+		// 	Log.info(">>>LEFT  TRIGGER<<<");
+		// }
+		// if (m_oi.pilot.getTrigger(Hand.kRight) >=.9 ) {
+		// 	l = r;
+		// 	Log.info(">>>RIGHT TRIGGER<<<");
+		// }
+
+		drive(l,r);
 		// Log.info("			LEFT  = " + l);
 		// Log.info("			RIGHT = " + r);
 

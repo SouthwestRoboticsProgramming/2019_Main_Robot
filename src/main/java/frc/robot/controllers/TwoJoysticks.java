@@ -7,6 +7,7 @@
 
 package frc.robot.controllers;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import frc.robot.Robot;
 import frc.robot.Interfaces.IController;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -31,14 +32,14 @@ public class TwoJoysticks implements IController {
     }
 
     public void defaultDrive(DriveTrain train) {
-
+        train.tankDrivePeriodic();
     }
 
     public double getAnalog(Hand hand, AxisType axis) {
         double output;
         switch(hand) {
             case kLeft  : output = left.getAxis(axis); break;
-            case kRight : output = -right.getAxis(axis); break;
+            case kRight : output = right.getAxis(axis); break;
             default     : output = getAnalog(dominantHand, axis); break;
         }
         return output;

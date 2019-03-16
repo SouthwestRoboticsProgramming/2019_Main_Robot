@@ -27,7 +27,7 @@ public class RearUp extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    climb.set(Somatotype.kContract);
+    climb.set(Somatotype.kExpand);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -47,6 +47,6 @@ public class RearUp extends Command {
   @Override
   protected void interrupted() {
 
-    climb.set(Somatotype.kExpand);
+    climb.set(Somatotype.kContract);
   }
 }

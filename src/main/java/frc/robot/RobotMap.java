@@ -22,10 +22,14 @@ public class RobotMap {
 
 
   // ids
-	public static final int LEFT_REAR_MOTOR = 0;
+	// public static final int LEFT_REAR_MOTOR = 2; // this is all assuming that forward is claw side.
+	// public static final int RIGHT_REAR_MOTOR = 1;
+	// public static final int LEFT_FRONT_MOTOR = 0;
+	// public static final int RIGHT_FRONT_MOTOR = 1;
+	public static final int LEFT_REAR_MOTOR = 3;
 	public static final int RIGHT_REAR_MOTOR = 1;
+	public static final int LEFT_FRONT_MOTOR = 0;
 	public static final int RIGHT_FRONT_MOTOR = 2;
-	public static final int LEFT_FRONT_MOTOR = 3;
 	
 	public static final int GRABBER_SOLENOID_CAN = 5;
 	public static final int GRABBER_SOLENOID_PCM = 7;

@@ -63,7 +63,6 @@ public class Calc {
         return bool ? 1 : 0;
     }
     public static boolean val(double n) {
-        Math.signum(2);
         return n == 0 ? false : true ;
     }
 }

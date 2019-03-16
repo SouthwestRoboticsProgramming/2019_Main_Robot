@@ -26,7 +26,9 @@ import frc.robot.sensors.In;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
-
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode.PixelFormat;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -35,17 +37,18 @@ import frc.robot.commands.*;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static DriveTrain m_drive;
-  public static final Arm m_arm = new Arm();
+  private static DriveTrain drive;
+  public static final Arm arm = new Arm();
   public static final Ramp ramp = new Ramp();
   public static final Climber climb = new Climber();
   public static final Vacuum vacuum = new Vacuum();
+  public static final Camera cam = new Camera(); 
 
-  private static final OI m_oi = new OI();
+  private static final OI oi = new OI();
 
   public static final double roundDuration = .02;
  /*
-  abreviations :
+  abreviations :S
   x = position
   v = velocity 
   a = acceleration
@@ -68,12 +71,18 @@ public class Robot extends TimedRobot {
     Log.info("calibrating");
     System.out.println("Starting robot init..." + vacuum); 
     
-    m_drive = new DriveTrain(m_oi);
+    drive = new DriveTrain(oi);
 
-    m_autonomousCommand = new AutonomousChain(m_drive);
-    m_teleopCommand = new TeleopCtrl(m_drive,m_arm,m_oi);
+    m_autonomousCommand = new AutonomousChain(drive);
+    m_teleopCommand = new TeleopCtrl(drive,arm,cam,oi);
     
     m_chooser.setDefaultOption("Teleop Command", m_teleopCommand);
+
+    CameraServer.getInstance().startAutomaticCapture();
+    
+    // UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+    // camera.setVideoMode(PixelFormat.kBGR , 300, 150, 20);
+
 //    m_chooser.addOption("Autonomous Command", m_autonomousCommand);
     // m_chooser.addObject("Drive command",new DriveCommand(m_drive));
     // chooser.addOption("My Auto", new MyAutoCommand());

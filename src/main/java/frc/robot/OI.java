@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Joystick.AxisType;
 import frc.robot.Interfaces.*;
 import frc.robot.Interfaces.IController.Button;
 import frc.robot.commands.*;
+import frc.robot.controllers.Xbox;
 
 
 /**
@@ -38,7 +39,7 @@ public class OI {
 
 	public OI() {
 
-		System.out.println("starting OI...  " + Robot.vacuum);
+		// System.out.println("starting OI...  " + Robot.vacuum);
 		// xbox = new Xbox(PORT_XBOX);
 		// twoJoy = new TwoJoysticks(PORT_LEFT, PORT_RIGHT);
 		// JoystickButton a = xbox.getButton(Hand.kLeft, 1);
@@ -47,18 +48,15 @@ public class OI {
 		// We reversed these to make it not go backwards
 		// pilot = new TwoJoysticks(Hand.kRight, PORT_RIGHT, PORT_LEFT);
 		// arm_pilot  = new Xbox(PORT_XBOX);
-		pilot = new Xbox(PORT_XBOX);
-		arm_pilot  = new TwoJoysticks(Hand.kRight, PORT_RIGHT, PORT_LEFT);
+		pilot = new TwoJoysticks(Hand.kRight, PORT_LEFT, PORT_RIGHT);
+		
+		arm_pilot  = new Xbox(PORT_XBOX);
 		pilot.getButton(Button.PopRamp).whenPressed(new PopRamp(Robot.ramp));
 		pilot.getButton(Button.ToggleRearUp).toggleWhenPressed(new RearUp(Robot.climb));
 
-		arm_pilot.getButton(Button.ToggleVac).toggleWhenPressed(new VacuumToggle(Robot.m_arm, Robot.vacuum));
-		arm_pilot.getButton(Button.HeightTo1).whenPressed(new ArmToHeight(Robot.m_arm, 1));
-		arm_pilot.getButton(Button.HeightTo2).whenPressed(new ArmToHeight(Robot.m_arm, 2));
-
-
-
-
+		arm_pilot.getButton(Button.ToggleVac).toggleWhenPressed(new VacuumToggle(Robot.arm, Robot.vacuum));
+		// arm_pilot.getButton(Button.HeightTo1).whenPressed(new ArmToHeight(Robot.m_arm, 1));
+		// arm_pilot.getButton(Button.HeightTo2).whenPressed(new ArmToHeight(Robot.m_arm, 2));
 	}
 
 

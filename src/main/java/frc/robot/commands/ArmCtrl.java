@@ -72,8 +72,25 @@ public class ArmCtrl extends Command {
     //Log.info("Upper Extension Limit: " + isExtendTooHigh());
 
 
-    double shoulder_val = oi.arm_pilot.getAnalog(Hand.kLeft); //But its the left side???
-    double wrist_val = oi.arm_pilot.getAnalog(Hand.kRight);
+    // double shldr_val = oi.arm_pilot.getAnalog(Hand.kLeft); //But its the left side???
+    // double wrist_val = oi.arm_pilot.getAnalog(Hand.kRight);
+    
+    // arm.setShoulder(previousShoulder += (oi.arm_pilot.getAnalog(Hand.kLeft) - previousShoulder) * MAX_CHNG_S);
+    // arm.setWrist(   previousWrist    += (oi.arm_pilot.getAnalog(Hand.kRight)- previousWrist   ) * MAX_CHNG_W);
+  
+
+    //KEEP THIS
+    double lft_t = oi.arm_pilot.getTrigger(Hand.kLeft); // left and right triggers
+    double rht_t = oi.arm_pilot.getTrigger(Hand.kRight);
+    double trigger = Math.max(lft_t, rht_t); // No Math.abs because triggers are always between 0 and 1
+    trigger = -Calc.eq(lft_t, trigger) * lft_t + // lft is negative because it indicates contracting while rht is expanding
+               Calc.eq(rht_t, trigger) * rht_t ;
+    trigger = (trigger - previousExtention) * MAX_CHNG_E + previousExtention;
+    arm.setExtention(trigger);
+    previousExtention = trigger;
+    
+        
+  }
 
     // Cal Commented the 59 lines below this Feb 21 2019.
     // if (inProcessOfBreaking) {
@@ -138,12 +155,7 @@ public class ArmCtrl extends Command {
     
     
 
-    double lft_t = oi.arm_pilot.getTrigger(Hand.kLeft); // left and right triggers
-    double rht_t = oi.arm_pilot.getTrigger(Hand.kRight);
-  // Cal uncommented the 3 lines below this Feb 21 2019
-    double trigger = Math.max(lft_t, rht_t); // No Math.abs because triggers are always between 0 and 1
-    trigger = -Calc.eq(lft_t, trigger) * lft_t + // lft is negative because it indicates contracting while rht is expanding
-               Calc.eq(rht_t, trigger) * rht_t ;
+
     // Cal commented the 6 lines below this  Feb 21 2019
     // double trigger;
     // if (lft_t >= rht_t) {
@@ -189,7 +201,7 @@ public class ArmCtrl extends Command {
   //   previousWrist = wrist_val;
   //   previousShoulder = shoulder_val;
   //   previouslyBreaking = breaking;
-  }
+  
 
   // Make this return true when this Command no longer needs to run execute()
   @Override

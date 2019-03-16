@@ -12,14 +12,16 @@ import frc.robot.Interfaces.*;
 /**
  * Add your docs here.
  */
-public class ShoulderEncoder implements IEncoder {
+public class ArmEncoder implements IEncoder {
     private final WPI_TalonSRX m_talon;
     private static final double TICKS_PER_ROTATION = 1024;
     private final double sign;
     private final double GEAR_RATIO;
     private final double CIRCUMFERENCE;
 
-    public ShoulderEncoder(WPI_TalonSRX talon, boolean reversed, double gearRatio, double circumference) {
+    private double previous;
+
+    public ArmEncoder(WPI_TalonSRX talon, boolean reversed, double gearRatio, double circumference) {
         this.m_talon = talon;
         sign = reversed ? -1 : 1;
         this.GEAR_RATIO = gearRatio;
@@ -43,4 +45,5 @@ public class ShoulderEncoder implements IEncoder {
     public double omega() {
         return m_talon.getSelectedSensorVelocity(0) / TICKS_PER_ROTATION * sign * GEAR_RATIO * 360d;
     }
+    
 }
