@@ -13,4 +13,5 @@ package frc.robot.sensors;
 public class In {
     public static final HorizontalGyro gyro = new HorizontalGyro();
     public static final LimeLight lime = new LimeLight();
+    public static final Camera camera = new Camera();
 }

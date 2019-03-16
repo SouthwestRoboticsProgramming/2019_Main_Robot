@@ -72,37 +72,25 @@ public class Camera {
         // camera = CameraServer.getInstance().startAutomaticCapture();
         new Thread(() -> {
             
-            CameraServer.getInstance().startAutomaticCapture();
-            // camera = new UsbCamera(name,path);
+            camera = CameraServer.getInstance().startAutomaticCapture();
+            camera.setResolution(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
             
-            // camera.setResolution(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-            // camera.setExposureManual(1);
-
-            // CvSink cvSink = CameraServer.getInstance().getVideo();
+            CvSink cvSink = CameraServer.getInstance().getVideo();
+            CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
             
-            // CvSink cvSink = new CvSink(name);
-
-            // CvSource outputStream = CameraServer.getInstance().putVideo("webcam", RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-            // CvSource outputStream = new CvSource(name, PixelFormat.kBGR, RESOLUTION_WIDTH, RESOLUTION_HEIGHT, 20);
-            // Log.info("got here");
-
+            Mat source = new Mat();
+            Mat output = new Mat();
+            
             while(!Thread.interrupted()) {
-                
-                // cvSink.grabFrame(source);
-                // outputStream.putFrame(source);
-                // outputStream.putFrame(source);
-                // Log.info(source);
-                // proccess();
-
-                // Log.info(source.toString());
-                // proccess(source);
-                // outputStream.putFrame(this.source);
+                cvSink.grabFrame(source);
+                Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+                outputStream.putFrame(output);
             }
         }).start();
     }
 
     private void proccess() {
-        Imgproc.cvtColor(source,output,Imgproc.COLOR_BGR2HSV);
+        Imgproc.cvtColor(source,source,Imgproc.COLOR_BGR2HSV);
         // Imgproc.blur(output,output, new Size(RESOLUTION_WIDTH,RESOLUTION_HEIGHT)); // maybe should be somthing like new Size(3,3) or new Size(100,50)?
         short[][] img = new short[RESOLUTION_HEIGHT][RESOLUTION_WIDTH];
         double[] color;
@@ -150,16 +138,16 @@ public class Camera {
         for (short i = 0; i < image.length; i ++) {
             for (short j = 0; j < image[i].length; j ++) {
                 if (j != RESOLUTION_WIDTH-1) {
-                    out[i][j] += out[i][j+1];
+                    out[i][j] += image[i][j+1];
                 }
                 if (j != 0) {
-                    out[i][j] += out[i][j-1];
+                    out[i][j] += image[i][j-1];
                 }
                 if (i != RESOLUTION_HEIGHT-1) {
-                    out[i][j] += out[i+1][j];
+                    out[i][j] += image[i+1][j];
                 }
                 if (i != 0) {
-                    out[i][j] += out[i-1][j];
+                    out[i][j] += image[i-1][j];
                 }
                 // out[i][j] += image[Math.min(i+1, RESOLUTION_HEIGHT-1)][j]  + image[Math.max(i-1,0)][j] + image[i][Math.min(j+1, RESOLUTION_WIDTH)] + image[i][Math.max(j-1,0)];
             }
@@ -206,28 +194,28 @@ public class Camera {
     //         map(mat, x -> add(add(add(add(x,new Scalar(mat.get(0,0)).mul(four(bluriness))), new Scalar(mat.get(0,1))), new Scalar(mat.get(1,0))), new Scalar(mat.get(1,1))));
     //     }
     // }
-    private static Scalar add(Scalar a, Scalar b) {
-        return new Scalar(a.val[0] + b.val[0], a.val[1] + b.val[1], a.val[2] + b.val[2], a.val[3] + b.val[3]);
-    }
-    private static Scalar add(double a, Scalar b) {
-        return add(new Scalar(four(a)), b);
-    }
-    private static Scalar add(Scalar a, double b) {
-        return add(b,a);
-    }
-    private static Mat add(Mat a, Scalar b) {
-        Range range = new Range(0,5);
+    // private static Scalar add(Scalar a, Scalar b) {
+    //     return new Scalar(a.val[0] + b.val[0], a.val[1] + b.val[1], a.val[2] + b.val[2], a.val[3] + b.val[3]);
+    // }
+    // private static Scalar add(double a, Scalar b) {
+    //     return add(new Scalar(four(a)), b);
+    // }
+    // private static Scalar add(Scalar a, double b) {
+    //     return add(b,a);
+    // }
+    // private static Mat add(Mat a, Scalar b) {
+    //     Range range = new Range(0,5);
  
-        return map(a, x -> add(b, x));
-    }
+    //     return map(a, x -> add(b, x));
+    // }
 
 
-    private static Scalar negate(Scalar a) {
-        for (byte i = 0; i < 4 ; i++) {
-            a.val[i] = -i;
-        }
-        return a;
-    }
+    // private static Scalar negate(Scalar a) {
+    //     for (byte i = 0; i < 4 ; i++) {
+    //         a.val[i] = -i;
+    //     }
+    //     return a;
+    // }
     private static double[] four(double a) {
         double[] lst = {a,a,a,a};
         return lst;

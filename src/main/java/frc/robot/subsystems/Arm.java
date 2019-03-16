@@ -101,7 +101,7 @@ public class Arm extends Subsystem {
       if (timeWhileInRange.get() == 0) {
         timeWhileInRange.start();
       }
-      else if(timeWhileInRange.get()>=minimumBrakeTime) {
+      else if(timeWhileInRange.get() >= minimumBrakeTime) {
         brakeShoulder();
       }
       return 0;
