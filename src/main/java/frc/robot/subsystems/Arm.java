@@ -57,10 +57,12 @@ public class Arm extends Subsystem {
   public final ArmEncoder shoulder;
   public final ArmEncoder wrist;
 
-  private final Solenoid break_solenoid;
+  private final Solenoid brake_solenoid;
 
   public boolean vacuumsOn = false;
-  public boolean breaksOn = false;
+  public boolean brakesOn = false;
+  public boolean brakeTiming = false;
+  public boolean unbrakeTiming = false;
 
   private final double minimumMotorInput = .1;
 
@@ -89,33 +91,51 @@ public class Arm extends Subsystem {
     wrist = new ArmEncoder(wrist_motor, false, 1, 5);
     vacuum_motor_1 = new WPI_VictorSPX(VACUUM_1);
     vacuum_motor_2 = new WPI_VictorSPX(VACUUM_2);
-    break_solenoid = new Solenoid(PCM_ID, BREAK_ID);
+    brake_solenoid = new Solenoid(PCM_ID, BREAK_ID);
 
   }
 
-  public double setShoulder(double x) {
+  public void setShoulder(double x) {
     x = -x; //I don't know whether we need to do this
-    x = Math.min(Calc.val(isShoulderTooHigh())-1, x);
-    x = Math.max(Calc.val(isShoulderTooLow()) -1, x);
+    x = Math.min(1 - Calc.val(isShoulderTooHigh()), x);
+    x = Math.max(Calc.val(isShoulderTooLow()) - 1, x);
     if (Math.abs(x) < minimumMotorInput) {
-      if (timeWhileInRange.get() == 0) {
+      if (unbrakeTiming) {
+        unbrakeTiming = false;
+        timeWhileInRange.reset();
+      }
+      if (timeWhileInRange.get() == 0 && !brakeTiming) {
         timeWhileInRange.start();
+        brakeTiming = true;
       }
-      else if(timeWhileInRange.get()>=minimumBrakeTime) {
+      else if(timeWhileInRange.get()>=minimumBrakeTime && !brakesOn && brakeTiming) {
         brakeShoulder();
+        brakesOn = true;
+        timeWhileInRange.reset();
       }
-      return 0;
     }
-    else {
-      unBrakeShoulder();
-      shoulder_motor.set(x);
-      timeWhileInRange.reset();
-      return x;
+    else if (Math.abs(x) > minimumMotorInput) {
+      if (brakeTiming) {
+        brakeTiming = false;
+        timeWhileInRange.reset();
+      }
+      if (timeWhileInRange.get() == 0 && !unbrakeTiming) {
+        timeWhileInRange.start();
+        unbrakeTiming = true;
+      }
+      else if(timeWhileInRange.get()>=minimumBrakeTime && brakesOn && unbrakeTiming) {
+        unbrakeShoulder();
+        brakesOn = false;
+        timeWhileInRange.reset();
+      }
+      else {
+        setShoulder(x);
+      }
     }
   }
   public double setWrist(double x) {
     x = -x; // Again I'm uncertain
-    x = Math.min(Calc.val(isWristTooHigh())-1, x);
+    x = Math.min(1 - Calc.val(isWristTooHigh()), x);
     x = Math.max(Calc.val(isWristTooLow()) -1, x);
     if (Math.abs(x) < minimumMotorInput) {
       brakeWrist();
@@ -147,7 +167,7 @@ public class Arm extends Subsystem {
     shoulder_motor.set(0);
     setBrake(true);
   }
-  public void unBrakeShoulder() {
+  public void unbrakeShoulder() {
     setBrake(false);
   }
   public void brakeWrist() {
@@ -176,7 +196,7 @@ public class Arm extends Subsystem {
     vacuum_motor_1.set(v);
     vacuum_motor_2.set(v);
   }
-  public void toggleBreak() {
+  public void toggleBrake() {
     // Cal changed this bit by adding the line below this commented block and commenting the 5 lines below
     // if (breaksOn) {
     //   break_solenoid.set(true);
@@ -184,11 +204,11 @@ public class Arm extends Subsystem {
     // else {
     //   break_solenoid.set(false);
     // }
-    breaksOn = !breaksOn;
-    break_solenoid.set(breaksOn);
+    brakesOn = !brakesOn;
+    brake_solenoid.set(brakesOn);
   }
   public void setBrake(boolean state) {
-    break_solenoid.set(state);
+    brake_solenoid.set(state);
   }
   public boolean isShoulderTooHigh() {
     return !UpperShoulderLimitSwitch.get();
