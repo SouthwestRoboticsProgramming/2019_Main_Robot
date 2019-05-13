@@ -30,13 +30,15 @@ import frc.robot.sensors.*;
 import frc.robot.*;
 import frc.utilities.*;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
+import frc.robot.sensors.LimeLight;
+import frc.robot.sensors.In;
 
 public class DriveTrain extends Subsystem {
 
 	public static double speedFraction = .5;
 	public static double turnFraction = .75;
 
-	private static final double MAX_CHANGE = .7;
+	private static final double MAX_CHANGE = .5;
 	// private static final double MAX_SPEED = 1;
 	private	double Pl = 0;
 	private double Pr = 0;
@@ -45,9 +47,13 @@ public class DriveTrain extends Subsystem {
 	private double Ptheta = 0;
 
 	private final boolean isInvertedLeft = true;
-	private final boolean isInvertedRight = true;
+	private final boolean isInvertedRight = false;
+
+	private final double LOCKED_JOY_EFFECT = .3;
 
 	private final double MAG_TO_BRAKE = .1;
+
+	private double modifier = 1;
 	
 	// private final double SPEED_DIFFERENTIAL = 0.2;
 	//private Tuple<Double,Double> previous_heading = new Tuple<Double,Double>(0d,0d);
@@ -60,16 +66,16 @@ public class DriveTrain extends Subsystem {
 	private SpeedControllerGroup rightSpeedController;
 	
 	private DifferentialDrive m_drive;
-	private OI m_oi;
+	//private OI m_oi;
 	
 
 
 	private final WheelEncoder left;
 	private final WheelEncoder right;
 	
-	public DriveTrain(OI oi)
+	public DriveTrain()
 	{
-		m_oi = oi;
+		
 		leftRearMotor        = new WPI_TalonSRX(RobotMap.LEFT_REAR_MOTOR);
 		rightRearMotor       = new WPI_TalonSRX(RobotMap.RIGHT_REAR_MOTOR);
 		rightFrontMotor      = new WPI_TalonSRX(RobotMap.RIGHT_FRONT_MOTOR);
@@ -103,14 +109,20 @@ public class DriveTrain extends Subsystem {
 
 	@Override
     public void initDefaultCommand() {
-		// setDefaultCommand(new DriveCommand(this));
+		setDefaultCommand(new Drive(this));
+
         // Set the default command for a subsystem here.
-        //setDefaultCommand(new CanDriveCommand(this));
+		//setDefaultCommand(new CanDriveCommand(this));
+
 	}
 
 
     public void drive(double left, double right) {
-    	m_drive.tankDrive( left,   right);
+		left = (left - Pl) * MAX_CHANGE + Pl;
+		right = (right - Pr) * MAX_CHANGE + Pr;
+		m_drive.tankDrive( left * modifier,  right * modifier); // multiplied by neg 1
+		Pl = left;
+		Pr = right;
     }
     public void brake() {
 		leftRearMotor.stopMotor();
@@ -139,57 +151,34 @@ public class DriveTrain extends Subsystem {
 	// 	this.arcadeDrive(x, y);
 	// }
 
-	
-	public void tankDrivePeriodic() {
-		// if (Math.abs(In.gyro.getAccel()) > .2) {
-		// 	m_oi.controller.rumble(1d);
-		// } 
-		// else {
-		// 	m_oi.controller.rumble(0d);
-		// }
-		double l = m_oi.pilot.getAnalog(Hand.kLeft);
-		double r = m_oi.pilot.getAnalog(Hand.kRight);
-		
-		// if(Math.abs(l) < MAG_TO_BRAKE) {
-		// 	l = 0;
-		// 	leftSpeedController.stopMotor();
-		// }
-		// if(Math.abs(r) < MAG_TO_BRAKE) {
-		// 	r = 0;
-		// 	rightSpeedController.stopMotor();
-		// }
-
-		// Duo dir = --(new Duo(l,r)).sub(previous_speed).mult(.1).add(previous_speed);
-		l = (l - Pl) * MAX_CHANGE + Pl ;
-		r = (r - Pr) * MAX_CHANGE + Pr;
-		
-
-
-		// if (m_oi.pilot.getTrigger(Hand.kLeft) >= .9) {
-		// 	r = l;
-		// 	Log.info(">>>LEFT  TRIGGER<<<");
-		// }
-		// if (m_oi.pilot.getTrigger(Hand.kRight) >=.9 ) {
-		// 	l = r;
-		// 	Log.info(">>>RIGHT TRIGGER<<<");
-		// }
-
-		drive(l,r);
-		// Log.info("			LEFT  = " + l);
-		// Log.info("			RIGHT = " + r);
-
-		Pl = l;
-		Pr = r;
+	// public void followLine() {
+	// 	// double skew = In.lime.getSkew();
+	// 	Log.info(In.lime.getSkew());
+	// }
+	public void tankDrivePeriodic(double l, double r, boolean l_trigg, boolean r_trigg) {
+		// double l = Robot.oi.pilot.getAnalog(Hand.kLeft);
+		// double r = Robot.oi.pilot.getAnalog(Hand.kRight);
+		// l = (l - Pl) * MAX_CHANGE + Pl ;
+		// r = (r - Pr) * MAX_CHANGE + Pr;
+		// boolean right = Robot.oi.pilot.getTrigger(Hand.kRight) == 1d;
+		// boolean left  = Robot.oi.pilot.getTrigger(Hand.kLeft) == 1d;
+		boolean rht = r_trigg && !l_trigg;
+		boolean lft = l_trigg && !r_trigg;
+		this.drive(Calc.val(lft) * l + Calc.val(rht) * (r + l * LOCKED_JOY_EFFECT) + l * Calc.val(Calc.nor(lft,rht)),Calc.val(rht) * r + Calc.val(lft) * (l + r * LOCKED_JOY_EFFECT) + r * Calc.val(Calc.nor(rht,lft)) );
+		// Pl = l;
+		// Pr = r;
 	}
 	public void arcadeDrivePeriodic() {
-		double theta = m_oi.pilot.getAnalog(AxisType.kX);
-		double r = m_oi.pilot.getAnalog(AxisType.kY);
+		double theta = Robot.oi.pilot.getAnalog(AxisType.kX);
+		double r = Robot.oi.pilot.getAnalog(AxisType.kY);
 
 		theta = (theta - Ptheta) * MAX_CHANGE + Ptheta;
 		r = (r - Pradius) * MAX_CHANGE + Pradius;
 
 		this.arcadeDrive(r, theta);
 
+		Ptheta = theta;
+		Pradius = r;
 	}
 
     // public	Duo autonomousGyroCalc(double speed, double degrees) {
@@ -216,12 +205,24 @@ public class DriveTrain extends Subsystem {
     	return new	Duo(turnSpeed, speed);
 	}
 
-	public void face(double degrees) {
+	public void absFace(double degrees) {
 		double currentAng = Calc.fxDeg(In.gyro.theta(Axis.Z));
 		double changeAng  = Calc.fxDeg(degrees - currentAng);
 		double turnSpeed  = (changeAng - In.gyro.omega() / 3) / 30;
 		m_drive.arcadeDrive(0,turnSpeed);
-	}	
+	}
+	public void limelightFollow() {
+		//double chngAng = Calc.fxDeg(newDegrees - currentDegrees);
+		//double turnSpeed = (chngAng - In.gyro.omega() / 3d) / 30d;
+		//double turnSpeed = Math.sqrt(Math.abs(chngAng))*Math.signum(chngAng)/180;
+		double tx = In.lime.getX();
+		double ty = In.lime.getY();
+		//Log.info(tx);
+		Log.info("ty: "+ty);
+		double left = Math.pow(Math.max(Math.min(ty / 20.5, .5),-.5),2d) + .3;//Math.max(Math.min(ty, .3),0);
+		double right = Math.pow(Math.max(Math.min(-ty /20.5,.5),-.5),2d) + .3;//Math.max(Math.min(-ty, .3),0);
+		this.drive(-left,-right);
+	}
 	/*
 	public void driveCommandPeriodic() {
     	Tuple<Double,Double> input = new Tuple<>();
@@ -239,6 +240,9 @@ public class DriveTrain extends Subsystem {
 	*/
     public void arcadeDrive(double speed, double rotation) {
 		m_drive.arcadeDrive(speed,-rotation);
+	}
+	public void isHalf(boolean val) {
+		modifier = 1d - Calc.val(val) * .3;
 	}
 	/*
     public void gyroDrive() {

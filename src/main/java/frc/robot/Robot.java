@@ -18,8 +18,6 @@ import frc.robot.sensors.LimeLight;
 import frc.robot.sensors.VerticalGyro;
 import frc.utilities.*;
 import frc.robot.Interfaces.IGyro.Axis;
-import frc.robot.subsystems.DriveTrain;
-import frc.robot.subsystems.Ramp;
 import frc.robot.commands.AutonomousChain;
 import frc.robot.commands.Drive;
 import frc.robot.sensors.In;
@@ -29,6 +27,8 @@ import frc.robot.commands.*;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Subsystem;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -37,16 +37,17 @@ import edu.wpi.cscore.VideoMode.PixelFormat;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static DriveTrain drive;
+  public static final DriveTrain drive = new DriveTrain();
+
   public static final Arm arm = new Arm();
   public static final Ramp ramp = new Ramp();
   public static final Climber climb = new Climber();
   public static final Vacuum vacuum = new Vacuum();
-  public static final Camera cam = new Camera(); 
+  public static final CameraDirection cam = new CameraDirection(); 
 
-  private static final OI oi = new OI();
-
+  public static final OI oi = new OI();
   public static final double roundDuration = .02;
+
  /*
   abreviations :S
   x = position
@@ -61,6 +62,7 @@ public class Robot extends TimedRobot {
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
   Command m_teleopCommand;
+  Command m_robotInitCommand;
   /*
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -68,27 +70,35 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     In.gyro.calibrate();
-    Log.info("calibrating");
+    // Log.info("calibrating");
     System.out.println("Starting robot init..." + vacuum); 
     
-    drive = new DriveTrain(oi);
+    // drive = new DriveTrain(oi);
 
     m_autonomousCommand = new AutonomousChain(drive);
-    m_teleopCommand = new TeleopCtrl(drive,arm,cam,oi);
+    // m_teleopCommand = new Drive(Robot.train);
+    // m_robotInitCommand = new RobotInitCtrl(arm);
     
-    m_chooser.setDefaultOption("Teleop Command", m_teleopCommand);
-
-    CameraServer.getInstance().startAutomaticCapture();
+    // m_chooser.setDefaultOption("Teleop Command", m_teleopCommand);
+    arm.shoulder.set(arm.SHOULDER_START_COUNT);
+    arm.extend.set(0);
     
+    UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();    
+    camera.setResolution(224,168);
+    camera.setFPS(32); 
+    // camera.setResolution(200, 200);
     // UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
     // camera.setVideoMode(PixelFormat.kBGR , 300, 150, 20);
 
 //    m_chooser.addOption("Autonomous Command", m_autonomousCommand);
     // m_chooser.addObject("Drive command",new DriveCommand(m_drive));
     // chooser.addOption("My Auto", new MyAutoCommand());
+    
+    // if (m_robotInitCommand != null) {
+    //   m_robotInitCommand.start();
+    // }
 
-
-
+    
 
   }
 
@@ -102,7 +112,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-  
+    // teleopInit();
 
     // Log.info("Angle = " + m_drive.getAngle());
   }
@@ -146,6 +156,9 @@ public class Robot extends TimedRobot {
      */
 
     // schedule the autonomous command (example)
+    if (m_robotInitCommand != null) {
+      m_robotInitCommand.cancel();
+    }
     if (m_autonomousCommand != null) {
       m_autonomousCommand.start();
     }
@@ -156,7 +169,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-
+    // arm.setShoulderAng(30);
 
 
   //   if(m_drive.getLeftEncoder() < 300) {
@@ -176,16 +189,23 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     //Log.info("teleopInit");
-    
+    // arm.checkEncoders();
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
 
-    m_teleopCommand.start();
+
+
+    // if (m_autonomousCommand != null) {
+    //   m_autonomousCommand.cancel();
+    // }
+    // if (m_robotInitCommand != null) {
+    //   m_robotInitCommand.cancel();
+    // }
+    //  Timer time = new Timer();
+    // time.delay(2);
+    //  m_teleopCommand.start();
   }
 
   /**
@@ -194,6 +214,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     //Log.info("teleopPeriodic");
+    // arm.checkEncoders();
     Scheduler.getInstance().run();
   }
 

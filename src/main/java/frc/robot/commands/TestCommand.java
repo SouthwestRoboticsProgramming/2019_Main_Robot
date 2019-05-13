@@ -8,45 +8,35 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.enums.Somatotype;
 import frc.robot.subsystems.*;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import frc.utilities.Duo;
-import frc.robot.sensors.*;
-import frc.robot.Interfaces.IGyro.Axis;
-public class InertialDamper extends Command {
-  private final double left_v;
-  private final double right_v;
-  private final DriveTrain m_drive;
-  private final double omega;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Solenoid;
 
-  public InertialDamper(DriveTrain m_drive) {
+public class TestCommand extends Command {
+  private Timer timer = new Timer();
+  public TestCommand() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    left_v  = m_drive.getEncoder(Hand.kLeft).omega();
-    right_v = m_drive.getEncoder(Hand.kRight).omega();
-    omega = In.gyro.omega(Axis.Z);
-    this.m_drive = m_drive;
+
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-
+    timer.start();
+    //Log.info("TestCommand works!");
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Duo current = new Duo(m_drive.getEncoder(Hand.kLeft).omega(), m_drive.getEncoder(Hand.kRight).omega());
-    Duo goal    = new Duo(left_v, right_v);
-    Duo dir     = goal.sub(current).div(5).add(current).div(100);
-    m_drive.drive((double) dir.first, (double) dir.second);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return timer.get() > 1d;
   }
 
   // Called once after isFinished returns true

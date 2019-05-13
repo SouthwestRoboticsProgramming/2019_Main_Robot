@@ -45,4 +45,7 @@ public class LimeLight {
     public double getVerticalSize() { // returns tvert or tallest horizontal part of match
         return table.getEntry("tvert").getDouble(0d);
     }
+    public double getSkew() {
+        return table.getEntry("ts").getDouble(0d);
+    }
 }

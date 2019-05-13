@@ -8,42 +8,53 @@
 package frc.robot.sensors;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import frc.robot.Interfaces.*;
 /**
  * Add your docs here.
  */
 public class ArmEncoder implements IEncoder {
-    private final WPI_TalonSRX m_talon;
-    private static final double TICKS_PER_ROTATION = 1024;
-    private final double sign;
-    private final double GEAR_RATIO;
+    private final Encoder encoder;
+    private static final double TICKS_PER_ROTATION = 4096;
+    private double GEAR_RATIO;
     private final double CIRCUMFERENCE;
+    private final int PORT0;
+    private final int PORT1;
+    private final boolean REVERSED;
+    // private final double sign;
 
-    private double previous;
+    private int adjust = 0;
 
-    public ArmEncoder(WPI_TalonSRX talon, boolean reversed, double gearRatio, double circumference) {
-        this.m_talon = talon;
-        sign = reversed ? -1 : 1;
-        this.GEAR_RATIO = gearRatio;
+    public ArmEncoder(int port0, int port1, boolean reversed, double gearRatio, double circumference, EncodingType type) {
+        PORT0 = port0;
+        PORT1 = port1;
+        GEAR_RATIO = gearRatio;
         CIRCUMFERENCE = circumference;
+        REVERSED = reversed;
+        encoder = new Encoder(PORT0, PORT1, REVERSED, type);
+        // encoder.setDistancePerPulse(1 / TICKS_PER_ROTATION);
     }
     public int get() {
-        return m_talon.getSelectedSensorPosition(0);
+        return encoder.get() + adjust;
     }
     public void set(int num) {
-        m_talon.setSelectedSensorPosition(num, 0, 2000);
+        adjust = num - encoder.get();
     }
+    // public void set(double degrees) {
+    //     this.set((int) (degrees / GEAR_RATIO));
+    // }
     public void reset() {
-        m_talon.set(0);
+        encoder.reset();
     }
     public double modifier() {
         return CIRCUMFERENCE / 360d;
     }
-    public double theta() {
-        return m_talon.get() / TICKS_PER_ROTATION * sign * GEAR_RATIO * 360d;
+    public double theta() { // degrees
+        return encoder.get() * GEAR_RATIO;
     }
-    public double omega() {
-        return m_talon.getSelectedSensorVelocity(0) / TICKS_PER_ROTATION * sign * GEAR_RATIO * 360d;
+    public double omega() { // degrees / second
+        return encoder.getRate() * GEAR_RATIO;
     }
     
 }

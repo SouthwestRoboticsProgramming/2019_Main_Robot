@@ -15,31 +15,34 @@ import frc.robot.enums.Somatotype;
 import frc.robot.Log;
 
 public class VacuumToggle extends Command {
-  private Timer timer = new Timer();
-  private Arm arm;
+  // private Timer timer = new Timer();
+  // private Arm arm;
   private final Vacuum vacuum;
-  private boolean solenoidIsOn = false; 
-  public VacuumToggle (Arm m_arm, Vacuum m_vacuum) {
+
+  public VacuumToggle (Vacuum m_vacuum) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     //requires(m_arm);
     requires(m_vacuum);
-    this.arm = m_arm;
+    // this.arm = m_arm;
     this.vacuum = m_vacuum;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    arm.toggleVacuumMotors();
-    solenoidIsOn = true;
-    vacuum.setState(solenoidIsOn);
-    timer.start();
+    
+    vacuum.set(true);
+    // timer.start();
+    Log.info("Vacuums -> ON");
+
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    Log.info("Vacuums ON");
+    //vacuumSolenoid.setState(true);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -52,14 +55,16 @@ public class VacuumToggle extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Log.info("Vacuums -> OFF");
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    vacuum.setState(false);
-    solenoidIsOn = false;
-    arm.toggleVacuumMotors();
+    vacuum.set(false);
+
+    // arm.toggleVacuumMotors();
+    Log.info("Vacuums -> OFF");
   }
 }

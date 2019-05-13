@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.sensors;
 
 /**
@@ -22,10 +15,11 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import org.opencv.core.Range;
 import java.util.function.*;
 import org.opencv.core.Scalar;
-import java.util.ArrayList;
+// import java.util.ArrayList;
 import org.opencv.core.Size;
 import java.awt.Point;
 import frc.robot.Log;
+import java.lang.Thread;
 
 public class Camera {
     private UsbCamera camera;
@@ -48,20 +42,13 @@ public class Camera {
 
     private boolean failedToFetch = false;
 
-    private Point matchLocation;
-    private Point matchAngle;
+
 
     public Mat getRaw() {
         return source;
     }
     public Mat getRefined() {
         return output;
-    }
-    public Point location() {
-        return matchLocation;
-    }
-    public Point locationAngle() {
-        return matchAngle;
     }
     public boolean failed() {
         return failedToFetch;

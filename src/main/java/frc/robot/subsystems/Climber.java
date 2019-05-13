@@ -16,8 +16,8 @@ import frc.robot.enums.Somatotype;
 public class Climber extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
-  private static final int CONTRACT_ID = 1;
-  private static final int EXPAND_ID = 0;
+  private static final int CONTRACT_ID = 0;
+  private static final int EXPAND_ID = 1;
   private static final TwoWaySolenoid solenoid = new TwoWaySolenoid(CONTRACT_ID, EXPAND_ID);
 
   public Climber() {}

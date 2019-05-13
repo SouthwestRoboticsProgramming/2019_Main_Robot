@@ -19,13 +19,16 @@ import frc.robot.Interfaces.IGyro.Axis;
 import frc.robot.subsystems.*;
 import frc.robot.OI;
 
+
+
 public class Drive extends Command {
+  public static boolean isManualDrive = true;
   DriveTrain m_sub;
-  OI m_oi;
-  public Drive(DriveTrain m_train, OI oi) {
+  // OI m_oi;
+  public Drive(DriveTrain m_train) {
     // Use requires() here to declare subsystem dependencies
     m_sub = m_train;
-    m_oi = oi;
+    // m_oi = oi;
     requires(m_sub);
   }
   @Override
@@ -34,7 +37,10 @@ public class Drive extends Command {
   }
   @Override
   protected void execute() {
-      m_oi.pilot.defaultDrive(m_sub);
+    // Log.info("is Manual Drive = " + Drive.isManualDrive);
+        Robot.oi.pilot.defaultDrive(m_sub);
+      
+      
     //Log.info("Driving");
     }
   @Override

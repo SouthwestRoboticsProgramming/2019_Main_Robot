@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 public class Xbox implements IController {
     final int PORT;
     private XboxController xbox;
+    private double reverseVal = 1;
 
     public Xbox(int port) {
         PORT = port;
@@ -37,13 +38,13 @@ public class Xbox implements IController {
             case kX : output = xbox.getX(hand); break;
             case kY : output = xbox.getY(hand); break;
         }
-        return output;
+        return output * reverseVal;
     }
     public JoystickButton getButton(Button button) {
         switch(button) {
-            case HeightTo2 : return new JoystickButton(xbox, XboxMap.B.toInt());
+            case ArmToVertical : return new JoystickButton(xbox, XboxMap.B.toInt());
             case PopRamp    : return new JoystickButton(xbox, XboxMap.Y.toInt());
-            case HeightTo1 : return new JoystickButton(xbox, XboxMap.A.toInt());
+            // case ArmToVertical : return new JoystickButton(xbox, XboxMap.A.toInt());
             case ToggleVac  : return new JoystickButton(xbox, XboxMap.X.toInt());
             default         : return new JoystickButton(xbox, XboxMap.X.toInt());
         }
@@ -76,5 +77,8 @@ public class Xbox implements IController {
 		{
 			return num;
 		}
+    }
+    public void reverse() {
+        reverseVal = -Math.signum(reverseVal);
     }
 }

@@ -8,7 +8,6 @@
 package frc.robot.commands;
 import frc.robot.subsystems.Arm;
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.OI;
 import frc.robot.Interfaces.IController.Button;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.subsystems.Logger;
@@ -16,80 +15,79 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.RobotMap;
 import frc.robot.Log;
+import frc.robot.sensors.In;
+import edu.wpi.first.wpilibj.Joystick.AxisType;
+import frc.robot.OI;
+import frc.robot.Robot;
 
 import frc.utilities.Calc;
 
 public class ArmCtrl extends Command {
-  private final OI oi;
+  // private final OI oi;
   private final Arm arm;
 
   private double previousWrist = 0;
   private double previousShoulder = 0;
   private double previousExtention = 0;
-  private double extensionPastLimit = 0;
-  boolean isPastLimit = false;
-  boolean breaking = false;
-  boolean previouslyBreaking = false;
-  boolean inProcessOfBreaking = false;
-  boolean isBreakOn = false;
-  int breakCounter = 0;
-  private JoystickButton extendArm;
 
 
-  private final double MAX_CHNG_W = .2;
-  private final double MAX_CHNG_S = .2;
+  private final double MAX_CHNG_W = .8;
+  private final double MAX_CHNG_S = .6;
   private final double MAX_CHNG_E = .2;
-  private final double MAX_EXTENSION = 1;
+  private final double MAX_EXTENTION = .3;
 
+  private final double SHOULDER_INPUT_MODIFIER = .7;
 
-
-
-
-  public ArmCtrl(Arm m_arm, OI m_oi) {
-    // Use requires() here to declare subsystem dependencies
+  public ArmCtrl(Arm m_arm) {
     requires(m_arm);
     this.arm = m_arm;
-    this.oi = m_oi;
-    extendArm = oi.arm_pilot.getButton(Button.ExtendClaw);
   }
-
-
-
-  // Called just before this Command runs the first time
-  @Override
-  protected void initialize() {
-  }
-
-  // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    //Log.info("Lower Shoulder Limit: " + isShoulderTooLow());
-    //Log.info("Upper Shoulder Limit: " + isShoulderTooHigh());
-    //Log.info("Lower Wrist Limit: " + isWristTooLow());
-    //Log.info("Upper Wrist Limit: " + isWristTooHigh());
+      arm.setWrist(Robot.oi.arm_pilot.getAnalog(AxisType.kZ) * .7);
+      arm.setShoulder(previousShoulder += (Robot.oi.arm_pilot.getAnalog(AxisType.kY) * SHOULDER_INPUT_MODIFIER  - previousShoulder) * MAX_CHNG_S);
+      // arm.setWrist( previousWrist    += (oi.arm_pilot.getAnalog(AxisType.kZ)- previousWrist) * MAX_CHNG_W);
+      double extend_input  = Calc.val(Robot.oi.arm_pilot.getButton(Button.Extend).get());
+      double retract_input = Calc.val(Robot.oi.arm_pilot.getButton(Button.Retract).get());
+      arm.setExtention((extend_input - retract_input) * MAX_EXTENTION);
+      arm.calibrate();
+      // Log.info(arm.shoulder.get());
+    // }
+
+    // Log.info("EXTEND THETA = " + arm.extend.theta());
+    // Log.info("EXTENTION THETA = " + arm.extend.get());
+    // Log.info("SHOULDER THETA = " + arm.shoulder.theta());
+
+    // if (!Arm.isManualControl) {
+    //   Log.info("Is Manual Control: "+ Arm.isManualControl);
+    // }
+
+    // Log.info("is Manual Control = >>> " + Arm.isManualControl + " <<<");
+
+    // Log.info("WRIST THETA  = " + arm.wrist.get());
+    // Log.info(In.lime.getSkew());
+    // Log.info("IS EXTEND TO HIGH = " + arm.isExtendTooHigh());
+    // Log.info("IS EXTEND TO LOW = " + arm.isExtendTooLow());
     
-    //Log.info("Lower Extension Limit: " + isExtendTooLow());
-    //Log.info("Upper Extension Limit: " + isExtendTooHigh());
-
-
-    // double shldr_val = oi.arm_pilot.getAnalog(Hand.kLeft); //But its the left side???
-    // double wrist_val = oi.arm_pilot.getAnalog(Hand.kRight);
+    // Log.info("IS WRIST TO HIGH = " + arm.isWristTooHigh());
+    // Log.info("IS WRIST TO LOW = " + arm.isWristTooLow());
     
-    // arm.setShoulder(previousShoulder += (oi.arm_pilot.getAnalog(Hand.kLeft) - previousShoulder) * MAX_CHNG_S);
-    // arm.setWrist(   previousWrist    += (oi.arm_pilot.getAnalog(Hand.kRight)- previousWrist   ) * MAX_CHNG_W);
-  
+    // Log.info("IS SHOULDER TO HIGH = " + arm.isShoulderTooHigh());
+    // Log.info("IS SHOULDER TO LOW = " + arm.isShoulderTooLow());
+    
 
+    // arm.setExtention(oi.arm_pilot.getTrigger(Hand.kRight));
     //KEEP THIS
-    double lft_t = oi.arm_pilot.getTrigger(Hand.kLeft); // left and right triggers
-    double rht_t = oi.arm_pilot.getTrigger(Hand.kRight);
-    double trigger = Math.max(lft_t, rht_t); // No Math.abs because triggers are always between 0 and 1
-    trigger = -Calc.eq(lft_t, trigger) * lft_t + // lft is negative because it indicates contracting while rht is expanding
-               Calc.eq(rht_t, trigger) * rht_t ;
-    trigger = (trigger - previousExtention) * MAX_CHNG_E + previousExtention;
-    arm.setExtention(trigger);
-    previousExtention = trigger;
-    
-        
+    // double lft_t = oi.arm_pilot.getTrigger(Hand.kLeft); // left and right triggers
+    //  double rht_t = oi.arm_pilot.getTrigger(Hand.kRight);
+    // double trigger = Math.max(lft_t, rht_t); // No Math.abs because triggers are always between 0 and 1
+    // trigger = -Calc.eq(lft_t, trigger) * lft_t + // lft is negative because it indicates contracting while rht is expanding
+    //            Calc.eq(rht_t, trigger) * rht_t ;
+    // trigger = (trigger - previousExtention) * MAX_CHNG_E + previousExtention;
+    // arm.setExtention(trigger);
+    //.info("SHOULDER SAYS $ " + arm.shoulder.theta());
+    //Log.info("WRIST    SAYS $ " + arm.wrist.theta());
+
   }
 
     // Cal Commented the 59 lines below this Feb 21 2019.
@@ -134,6 +132,8 @@ public class ArmCtrl extends Command {
     //     }
     //   }
     // }
+
+
 
     // arm.setShoulder(shoulder_val * .3);
     
@@ -207,6 +207,7 @@ public class ArmCtrl extends Command {
   @Override
   protected boolean isFinished() {
     return false;
+    
   }
 
   // Called once after isFinished returns true

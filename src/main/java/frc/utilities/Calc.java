@@ -65,4 +65,10 @@ public class Calc {
     public static boolean val(double n) {
         return n == 0 ? false : true ;
     }
+    public static boolean xor(boolean a, boolean b) {
+        return (a && !b) || (!a && b);
+    }
+    public static boolean nor(boolean a, boolean b) {
+        return !(a || b);
+    }
 }

@@ -18,8 +18,11 @@ import frc.robot.Interfaces.*;
 import frc.robot.Interfaces.IController.Button;
 import frc.robot.commands.*;
 import frc.robot.controllers.Xbox;
+import edu.wpi.first.wpilibj.command.Command;
+import frc.utilities.Calc;
+import frc.robot.subsystems.*;
 
-
+import java.util.function.Function;
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -28,14 +31,17 @@ public class OI {
 
 	public final IController pilot;
 	public final IController arm_pilot;
+	// public final IController arm_button_stick;
 
 
 	// public Xbox xbox;
 	// private TwoJoysticks twoJoy;
 
 	private static final int PORT_XBOX = 0;
-	private static final int PORT_LEFT = 1;
-	private static final int PORT_RIGHT = 2;
+	private static final int PORT_LEFT = 2;
+	private static final int PORT_RIGHT = 1;
+
+	private static final int PORT_BUTTON = 3;
 
 	public OI() {
 
@@ -50,15 +56,87 @@ public class OI {
 		// arm_pilot  = new Xbox(PORT_XBOX);
 		pilot = new TwoJoysticks(Hand.kRight, PORT_LEFT, PORT_RIGHT);
 		
-		arm_pilot  = new Xbox(PORT_XBOX);
-		pilot.getButton(Button.PopRamp).whenPressed(new PopRamp(Robot.ramp));
-		pilot.getButton(Button.ToggleRearUp).toggleWhenPressed(new RearUp(Robot.climb));
+		arm_pilot  = new OneJoystick(PORT_XBOX);
+		// arm_button_stick = new OneJoystick(PORT_BUTTON);
 
-		arm_pilot.getButton(Button.ToggleVac).toggleWhenPressed(new VacuumToggle(Robot.arm, Robot.vacuum));
+		// pilot.getButton(Button.PopRamp).whenPressed(new PopRamp(Robot.ramp));
+		pilot.getButton(Button.ToggleRearUp).toggleWhenPressed(new RearUp(Robot.climb));
+		pilot.getButton(Button.SpinCameraForwards).whenPressed(new CameraCtrl(Robot.cam, 174));
+		pilot.getButton(Button.SpinCameraBackwards).whenPressed(new CameraCtrl(Robot.cam, 12));
+		pilot.getButton(Button.Face).toggleWhenPressed(new LineFollowToggle());
+		
+		pilot.getButton(Button.SetIsHalf).whenPressed( new Command() {
+			public boolean isFinished() { return true; }
+			public void initialize() {
+				Robot.drive.isHalf(true);
+			}
+		});
+		pilot.getButton(Button.SetIsFull).whenPressed( new Command() {
+			public boolean isFinished() { return true; }
+			public void initialize() {
+				Robot.drive.isHalf(false);
+			}
+		});
+		pilot.getButton(Button.SetIsReversed).whenPressed( new Command() {
+			public boolean isFinished() { return true; } 
+			public void initialize() {
+				pilot.setReversed(true);
+			}
+		});
+		pilot.getButton(Button.SetIsForward).whenPressed( new Command() {
+			public boolean isFinished() {return true; }
+			public void initialize() {
+				pilot.setReversed(false);
+			}
+		});
+		
+
+		// arm_pilot.getButton(Button.ToggleVac).toggleWhenPressed(new VacuumToggle(Robot.arm, Robot.vacuum));
+		arm_pilot.getButton(Button.VacOn).whenPressed(new VacuumSet( Robot.vacuum, true));
+		arm_pilot.getButton(Button.VacOff).whenPressed(new VacuumSet( Robot.vacuum, false));
+
+		Command gotoBottomHatch = new SetArm(Robot.arm, 20d, Robot.arm.EXTEND_MAX_COUNT / 5,0d);
+		Command placeHatch = new SetArm(Robot.arm, 124d, Robot.arm.EXTEND_MAX_COUNT / 5, 0d);
+		Command ballPickUp = new SetArm(Robot.arm, 62d, Robot.arm.EXTEND_MAX_COUNT, 0d);
+		Command cargoBallPlace  = new SetArm(Robot.arm, 120d, Robot.arm.EXTEND_MAX_COUNT, 0d);
+		Command rocketBallPlace = new SetArm(Robot.arm, 124d, 40000, 0);
+		arm_pilot.getButton(Button.ArmToVertical).whenPressed(new SetArm(Robot.arm, 90d, 0, 0));
+		arm_pilot.getButton(Button.BottomHatch).whenPressed(gotoBottomHatch);
+		arm_pilot.getButton(Button.ToggleLimitSwitchs).toggleWhenPressed(new Command() {
+			public boolean isFinished() {return false;}
+			public void initialize() {
+				Arm.limitSwitchesEnabled(false);
+			}
+			public void interrupted() {
+				Arm.limitSwitchesEnabled(true);
+			}
+		});
+		arm_pilot.getButton(Button.PlaceHatch).whenPressed(placeHatch);
+		arm_pilot.getButton(Button.BallPlace).whenPressed(cargoBallPlace);
+		arm_pilot.getButton(Button.RocketBall).whenPressed(rocketBallPlace);
+		arm_pilot.getButton(Button.returnToDefault).whenPressed(new ArmCtrl(Robot.arm));
+		arm_pilot.getButton(Button.BallPickUp).whenPressed(new SetArm(Robot.arm, 45d, Robot.arm.EXTEND_MAX_COUNT,0));
+	
+
+		// arm_pilot.getButton(Button.HeightTo)
+
+		// arm_pilot.getButton(Button.HeightTo1).whenPressed(new Command() {
+		// 	public void initialize() {Arm.isManualControl = false;}
+		// 	public boolean isFinished() {
+		// 		return Arm.isManualControl = (Arm.isManualControl || Math.abs(Robot.arm.shoulder.theta() - 90d) <= 4d) && (Math.abs(Robot.arm.shoulder.omega()) <= 5d);
+		// 	}
+		// 	public void execute() { Robot.arm.setShoulderAng(90); }
+		// });
+
+		// arm_pilot.getButton(Button.ToggleBrake).toggleWhenPressed(new Command() {
+		// 	public boolean isFinished() {return false;}
+		// 	public void initialize() {Robot.arm.setBrake(true);}
+		// 	public void interrupted() {Robot.arm.setBrake(false);}
+		// });
 		// arm_pilot.getButton(Button.HeightTo1).whenPressed(new ArmToHeight(Robot.m_arm, 1));
 		// arm_pilot.getButton(Button.HeightTo2).whenPressed(new ArmToHeight(Robot.m_arm, 2));
-	}
 
+	}
 
 
 

@@ -31,13 +31,33 @@ public interface IController {
 
     public void defaultDrive(DriveTrain train);
 
+    default public void reverse() {};
+    
+    default public void setReversed(boolean val) {}
+
     public enum Button {
-        ExtendClaw,
+        Extend,
+        Retract,
         PopRamp,
         ToggleClaw,
         ToggleRearUp,
         ToggleVac,
-        HeightTo2,
-        HeightTo1
+        ArmToVertical,
+        SpinCameraForwards,
+        SpinCameraBackwards,
+        Face,
+        BottomHatch,
+        PlaceHatch,
+        BallPickUp,
+        BallPlace,
+        RocketBall,
+        ToggleLimitSwitchs,
+        returnToDefault,
+        VacOn,
+        VacOff,
+        SetIsHalf,
+        SetIsFull,
+        SetIsReversed,
+        SetIsForward
     }
 }

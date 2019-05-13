@@ -636,7 +636,7 @@ public class ADIS16448_IMU extends GyroBase implements Gyro, PIDSource, Sendable
 
                     }
                 } else {
-                    System.out.println("Invalid CRC");
+                   // System.out.println("Invalid CRC");
                 }
             }
         }
