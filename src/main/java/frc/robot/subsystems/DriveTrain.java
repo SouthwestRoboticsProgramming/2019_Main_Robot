@@ -164,7 +164,7 @@ public class DriveTrain extends Subsystem {
 		// boolean left  = Robot.oi.pilot.getTrigger(Hand.kLeft) == 1d;
 		boolean rht = r_trigg && !l_trigg;
 		boolean lft = l_trigg && !r_trigg;
-		this.drive(Calc.val(lft) * l + Calc.val(rht) * (r + l * LOCKED_JOY_EFFECT) + l * Calc.val(Calc.nor(lft,rht)),Calc.val(rht) * r + Calc.val(lft) * (l + r * LOCKED_JOY_EFFECT) + r * Calc.val(Calc.nor(rht,lft)) );
+		this.drive(Calc.val(lft) * l + Calc.val(rht) * (r + l * LOCKED_JOY_EFFECT) + l * Calc.val(Calc.nor(lft,rht)) * .5,Calc.val(rht) * r + Calc.val(lft) * (l + r * LOCKED_JOY_EFFECT) + r * Calc.val(Calc.nor(rht,lft))*.5 );
 		// Pl = l;
 		// Pr = r;
 	}
