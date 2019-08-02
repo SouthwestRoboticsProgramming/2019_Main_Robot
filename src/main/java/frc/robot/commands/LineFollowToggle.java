@@ -23,7 +23,7 @@ public class LineFollowToggle extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Drive.isManualDrive = !Drive.isManualDrive;
+    Drive.isManualDrive = false;
     Log.info("Initializing LineFollowToggle");
   }
 
@@ -37,6 +37,7 @@ public class LineFollowToggle extends Command {
   @Override
   protected boolean isFinished() {
     // return timer.get() > 1d;
+    Drive.isManualDrive = true;
     return true;
   }
 
@@ -49,5 +50,6 @@ public class LineFollowToggle extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    Drive.isManualDrive = true;
   }
 }

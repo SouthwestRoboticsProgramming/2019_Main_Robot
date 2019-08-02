@@ -1,3 +1,10 @@
+package frc.robot.commands;
+
+import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.subsystems.DriveTrain;
+import frc.robot.sensors.WheelEncoder;
+import frc.robot.Log;
+
 public class LineFollowDrive extends Command {
   DriveTrain m_sub;
   public LineFollowDrive(DriveTrain m_drive) {
@@ -8,13 +15,13 @@ public class LineFollowDrive extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    this.m_encoder.reset();
+    // this.m_encoder.reset();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-     Duo dir = m_sub.autonomousGyroCalc(speed, angle);
+    //  Duo dir = m_sub.autonomousGyroCalc(speed, angle);
     m_sub.arcadeDrive( (double) dir.second, (double) dir.first);
     
   }
