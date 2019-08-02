@@ -21,8 +21,8 @@ public class Lst<A> {
     public Lst<A> tail(){return this.tail;}
     
     public <B> Lst<B> map(Function<A,B> fn) {
-        if (this.tail == null) return new Lst<B>(fn.apply(this.head));
-        else                   return new Lst<B>(fn.apply(this.head), this.tail.map(fn));
+        if (this.tail == null) return new Lst<B>(fn.apply(this.head()));
+        else                   return new Lst<B>(fn.apply(this.head()), this.tail().map(fn));
     }
     public <B> Lst<Tuple<A,B>> zip(Lst<B> arg0) {
         if (this.tail == null || arg0.tail == null) return new Lst<Tuple<A,B>>(new Tuple<A,B>(this.head, arg0.head));

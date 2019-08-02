@@ -38,7 +38,12 @@ public class Drive extends Command {
   @Override
   protected void execute() {
     // Log.info("is Manual Drive = " + Drive.isManualDrive);
-        Robot.oi.pilot.defaultDrive(m_sub);
+    if(isManualDrive) {
+      Robot.oi.pilot.defaultDrive(m_sub);
+    } 
+    else {
+
+    }
       
       
     //Log.info("Driving");

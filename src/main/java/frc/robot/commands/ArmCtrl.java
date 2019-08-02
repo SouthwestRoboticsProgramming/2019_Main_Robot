@@ -42,7 +42,7 @@ public class ArmCtrl extends Command {
     requires(m_arm);
     this.arm = m_arm;
   }
-  @Override
+  
   protected void execute() {
       arm.setWrist(Robot.oi.arm_pilot.getAnalog(AxisType.kZ) * .7);
       arm.setShoulder(previousShoulder += (Robot.oi.arm_pilot.getAnalog(AxisType.kY) * SHOULDER_INPUT_MODIFIER  - previousShoulder) * MAX_CHNG_S);

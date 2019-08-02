@@ -12,17 +12,18 @@ import frc.robot.Log;
 import frc.robot.sensors.LimeLight;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.commands.Drive;
+import frc.robot.sensors.LimeLight;
 
 public class LineFollowToggle extends Command {
   // private DriveTrain drive;
   public LineFollowToggle () {
-    // this.drive = drive;
+  
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Drive.isManualDrive = false;
+    Drive.isManualDrive = !Drive.isManualDrive;
     Log.info("Initializing LineFollowToggle");
   }
 
@@ -36,7 +37,7 @@ public class LineFollowToggle extends Command {
   @Override
   protected boolean isFinished() {
     // return timer.get() > 1d;
-    return false;
+    return true;
   }
 
   // Called once after isFinished returns true
@@ -48,6 +49,5 @@ public class LineFollowToggle extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    Drive.isManualDrive = true;
   }
 }
