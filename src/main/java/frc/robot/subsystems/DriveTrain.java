@@ -211,17 +211,27 @@ public class DriveTrain extends Subsystem {
 		double turnSpeed  = (changeAng - In.gyro.omega() / 3) / 30;
 		m_drive.arcadeDrive(0,turnSpeed);
 	}
+
+
 	public void limelightFollow() {
 		//double chngAng = Calc.fxDeg(newDegrees - currentDegrees);
 		//double turnSpeed = (chngAng - In.gyro.omega() / 3d) / 30d;
 		//double turnSpeed = Math.sqrt(Math.abs(chngAng))*Math.signum(chngAng)/180;
+		//Log.info(tx);
 		double tx = In.lime.getX();
 		double ty = In.lime.getY();
-		//Log.info(tx);
 		Log.info("ty: "+ty);
 		double left = Math.pow(Math.max(Math.min(ty / 20.5, .5),-.5),2d) + .3;//Math.max(Math.min(ty, .3),0);
 		double right = Math.pow(Math.max(Math.min(-ty /20.5,.5),-.5),2d) + .3;//Math.max(Math.min(-ty, .3),0);
 		this.drive(-left,-right);
+	}
+
+	public void lineFollow(double l, double r) {
+		//Based off https://github.com/NateDKing/Nate-2019/blob/master/FRC%202019%20TEST/src/main/java/frc/robot/subsystems/DriveSubsystem.java
+		double tx = In.lime.getX();
+		double ty = In.lime.getY();
+		double lineOffSet = (tx / 15 * .25);
+		drive.tankDrive(l+lineOffSet, r-lineOffSet)
 	}
 	/*
 	public void driveCommandPeriodic() {

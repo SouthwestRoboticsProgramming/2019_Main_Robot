@@ -46,6 +46,16 @@ public class TwoJoysticks implements IController {
             train.tankDrivePeriodic(-getAnalog(Hand.kRight), -getAnalog(Hand.kLeft),  Calc.val(getTrigger(Hand.kRight)), Calc.val(getTrigger(Hand.kLeft)));
         }
     }
+    
+    public void lineFollowDrive(DriveTrain train) {
+        if (!isReversed) {
+            train.lineFollow(getAnalog(Hand.kLeft), getAnalog(Hand.kRight));
+        }
+        else {
+            train.lineFollow(-getAnalog(Hand.kRight), -getAnalog(Hand.kLeft));
+        }
+    }
+
     public double getAnalog(Hand hand, AxisType axis) {
         double output;
         switch(hand) {

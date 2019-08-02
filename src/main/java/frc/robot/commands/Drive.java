@@ -42,7 +42,7 @@ public class Drive extends Command {
       Robot.oi.pilot.defaultDrive(m_sub);
     } 
     else {
-
+      Robot.oi.pilot.lineFollowDrive(m_sub);
     }
       
       
