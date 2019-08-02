@@ -63,7 +63,7 @@ public class OI {
 		pilot.getButton(Button.ToggleRearUp).toggleWhenPressed(new RearUp(Robot.climb));
 		pilot.getButton(Button.SpinCameraForwards).whenPressed(new CameraCtrl(Robot.cam, 174));
 		pilot.getButton(Button.SpinCameraBackwards).whenPressed(new CameraCtrl(Robot.cam, 12));
-		pilot.getButton(Button.Face).toggleWhenPressed(new LineFollowToggle());
+		pilot.getButton(Button.LineFollowToggle).toggleWhenPressed(new LineFollowToggle());
 		
 		pilot.getButton(Button.SetIsHalf).whenPressed( new Command() {
 			public boolean isFinished() { return true; }

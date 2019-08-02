@@ -82,7 +82,7 @@ public class TwoJoysticks implements IController {
             case ToggleRearUp: return getButton(nondominantHand, 4);
             case SpinCameraForwards: return getButton(dominantHand, 3);
             case SpinCameraBackwards: return getButton(dominantHand, 2);
-            case Face        : return getButton(dominantHand, 11);
+            case LineFollowToggle   : return getButton(dominantHand, 11);
             case SetIsHalf   : return getButton(dominantHand, 4);
             case SetIsFull   : return getButton(dominantHand, 5);
             case SetIsReversed: return getButton(dominantHand, 8);

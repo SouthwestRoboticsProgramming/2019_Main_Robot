@@ -58,6 +58,7 @@ public interface IController {
         SetIsHalf,
         SetIsFull,
         SetIsReversed,
-        SetIsForward
+        SetIsForward,
+        LineFollowToggle
     }
 }
