@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.utilities.Calc;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.Log;
 /**
  * Add your docs here.
  */
@@ -40,6 +41,9 @@ public class TwoJoysticks implements IController {
     }
     public void defaultDrive(DriveTrain train) {
         if (!isReversed) {
+            Log.info("NOT REVERSED");
+            Log.info(getAnalog(Hand.kLeft));
+            Log.info(getAnalog(Hand.kRight));
             train.tankDrivePeriodic(getAnalog(Hand.kLeft), getAnalog(Hand.kRight), Calc.val(getTrigger(Hand.kLeft)), Calc.val(getTrigger(Hand.kRight)));
         }
         else {

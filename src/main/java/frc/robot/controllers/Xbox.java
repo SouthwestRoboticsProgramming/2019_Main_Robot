@@ -32,6 +32,10 @@ public class Xbox implements IController {
         train.arcadeDrivePeriodic();
     }
 
+    public void lineFollowDrive(DriveTrain train) {
+        train.arcadeDrivePeriodic();
+    }
+
     public double getAnalog(Hand hand, AxisType axis) {
         double output = 0;
         switch(axis) {

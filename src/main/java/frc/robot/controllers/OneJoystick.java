@@ -32,6 +32,10 @@ public class OneJoystick implements IController {
         train.arcadeDrivePeriodic();
     }
 
+    public void lineFollowDrive(DriveTrain train) {
+        train.arcadeDrivePeriodic();
+    }
+
     public double getAnalog(Hand hand, AxisType axis) {
         // return joystick.getAxis(axis) * (Calc.val(axis.equals(AxisType.kY))*-2 + 1);
         return joystick.getAxis(axis) * (Calc.val(axis.equals(AxisType.kY)) * -2 + 1);

@@ -31,6 +31,8 @@ public interface IController {
 
     public void defaultDrive(DriveTrain train);
 
+    public void lineFollowDrive(DriveTrain train);
+
     default public void reverse() {};
     
     default public void setReversed(boolean val) {}

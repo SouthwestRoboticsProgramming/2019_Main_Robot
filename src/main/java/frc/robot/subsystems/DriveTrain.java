@@ -158,13 +158,15 @@ public class DriveTrain extends Subsystem {
 	public void tankDrivePeriodic(double l, double r, boolean l_trigg, boolean r_trigg) {
 		// double l = Robot.oi.pilot.getAnalog(Hand.kLeft);
 		// double r = Robot.oi.pilot.getAnalog(Hand.kRight);
+		Log.info("TANK DRIVE");
 		// l = (l - Pl) * MAX_CHANGE + Pl ;
 		// r = (r - Pr) * MAX_CHANGE + Pr;
 		// boolean right = Robot.oi.pilot.getTrigger(Hand.kRight) == 1d;
 		// boolean left  = Robot.oi.pilot.getTrigger(Hand.kLeft) == 1d;
 		boolean rht = r_trigg && !l_trigg;
 		boolean lft = l_trigg && !r_trigg;
-		this.drive(Calc.val(lft) * l + Calc.val(rht) * (r + l * LOCKED_JOY_EFFECT) + l * Calc.val(Calc.nor(lft,rht)) * .5,Calc.val(rht) * r + Calc.val(lft) * (l + r * LOCKED_JOY_EFFECT) + r * Calc.val(Calc.nor(rht,lft))*.5 );
+		// this.drive(Calc.val(lft) * l + Calc.val(rht) * (r + l * LOCKED_JOY_EFFECT) + l * Calc.val(Calc.nor(lft,rht)),Calc.val(rht) * r + Calc.val(lft) * (l + r * LOCKED_JOY_EFFECT) + r * Calc.val(Calc.nor(rht,lft)) );
+		this.drive(l, r);
 		// Pl = l;
 		// Pr = r;
 	}
@@ -231,7 +233,7 @@ public class DriveTrain extends Subsystem {
 		double tx = In.lime.getX();
 		double ty = In.lime.getY();
 		double lineOffSet = (tx / 15 * .25);
-		drive.tankDrive(l+lineOffSet, r-lineOffSet)
+		m_drive.tankDrive(l+lineOffSet, r-lineOffSet);
 	}
 	/*
 	public void driveCommandPeriodic() {

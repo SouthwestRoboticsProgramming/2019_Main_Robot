@@ -18,6 +18,8 @@ public class LineFollowDrive extends Command {
     // this.m_encoder.reset();
   }
 
+
+  /*
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
@@ -25,12 +27,13 @@ public class LineFollowDrive extends Command {
     m_sub.arcadeDrive( (double) dir.second, (double) dir.first);
     
   }
-
+*/
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    Log.info("Encoder = " + m_encoder.x());
-    return m_encoder.x() > inches;
+    // Log.info("Encoder = " + m_encoder.x());
+    // return m_encoder.x() > inches;
+    return true;
   }
 
   // Called once after isFinished returns true
